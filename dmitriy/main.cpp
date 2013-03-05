@@ -281,6 +281,24 @@ void polynome_derive2()
     std::cout<<"Z'(x)="<<value_main<<std::endl;
 }
 
+int euclid(int a, int b)
+{
+    int c;
+    if(a<b)
+    {
+        int t=a;
+        a=b;
+        b=t;
+    }
+
+    while(c=(a%b))
+    {
+        a=b;
+        b=c;
+    }
+    return b;
+}
+
 void print_help()
 {
     std::cout<<"Options:\n\t"
@@ -296,6 +314,7 @@ void print_help()
                "-cpd1\tcalculate polynome derivative (format x, a0, a1, ...)\n\t"
                "-cpv2\tcalculate polynome value (format: x, a(n), a(n-1), ...)\n\t"
                "-cpd2\tcalculate polynome derivative (format x, a(n), a(n-1), ...)\n\t"
+               "-gcd\tcalculate greatest common divisor\n\t"
                "\n";
 }
 
@@ -366,6 +385,15 @@ int main(int argc, char *argv[])
     else if(ARG("-cpd2"))
     {
         polynome_derive2();
+    }
+    else if(ARG("-gcd"))
+    {
+        int a,b;
+        std::cout<<"A: ";
+        std::cin>>a;
+        std::cout<<"B: ";
+        std::cin>>b;
+        std::cout<<"gcd("<<a<<","<<b<<")="<<euclid(24,18)<<"\n";
     }
     /*else if(ARG("-vect"))
     {
