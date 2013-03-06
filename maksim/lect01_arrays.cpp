@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-int* create_array(int *, int, int);
+int* create_array(int, int);
 
 void print( int*, int* );
 void print( int*, int );
@@ -33,7 +33,7 @@ int main()
   cout << endl << "Part 1: create_array" << endl;
   int *a;
   int n = 8, k = 3;
-  a = create_array( a, n, k);
+  a = create_array( n, k);
   print( a, a + n);
   
   cout << endl << "Part 2: print( int *, int *), print(int*, int) " << endl;
@@ -75,9 +75,9 @@ int main()
   return 0;
 }
 
-int* create_array(int *pa, int n, int k)
+int* create_array(int n, int k)
 {
-  pa = new int[n];
+  int *pa = new int[n];
   for(int i = 0; i < n; i++) pa[i] = 0; 
   for(int i = n-k; i < n; i++) pa[i] = 1;
   return pa; 
