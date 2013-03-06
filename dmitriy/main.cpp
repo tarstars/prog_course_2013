@@ -299,6 +299,157 @@ int euclid(int a, int b)
     return b;
 }
 
+class Coeffs
+{
+    public:
+        Coeffs(int Av,int Bv) : A(Av), B(Bv),
+            a_coeff(0), b_coeff(0){}
+        Coeffs(int Av,int Bv,int ac, int bc) : A(Av), B(Bv),
+            a_coeff(ac), b_coeff(bc){}
+        Coeffs(const Coeffs& other) : A(other.A), B(other.B),
+            a_coeff(other.a_coeff), b_coeff(other.b_coeff) {}
+
+        Coeffs& operator=(const Coeffs& other)
+        {
+            A=other.A;
+            B=other.B;
+            a_coeff=other.a_coeff;
+            b_coeff=other.b_coeff;
+            return *this;
+        }
+
+        inline int value() const { return a_coeff*A + b_coeff*B;}
+        inline int alpha() const { return a_coeff;}
+        inline int beta()  const { return b_coeff;}
+        void setValue(int ac, int bc)
+        {
+            a_coeff= ac;
+            b_coeff = bc;
+        }
+
+        Coeffs& operator+(const Coeffs& other)
+        {
+            a_coeff+=other.a_coeff;
+            b_coeff+=other.b_coeff;
+            return *this;
+        }
+        Coeffs& operator-(const Coeffs& other)
+        {
+            a_coeff-=other.a_coeff;
+            b_coeff-=other.b_coeff;
+            return *this;
+        }
+        Coeffs& operator*(int mult)
+        {
+            a_coeff*=mult;
+            b_coeff*=mult;
+            return *this;
+        }
+
+        int operator%(const Coeffs& other)
+        {
+            return (value()%other.value());
+        }
+        int operator/(const Coeffs& other)
+        {
+            return (value()/other.value());
+        }
+
+    private:
+        int A;
+        int B;
+
+        int a_coeff;
+        int b_coeff;
+};
+
+void euclid_coeffs(int a, int b)
+{
+    if(a<b)
+    {
+        int t=a;
+        a=b;
+        b=t;
+    }
+    Coeffs rc0(a,b,1,0),rc1(a,b,0,1),rc2(a,b);
+    while(rc0%rc1)
+    {
+        rc2=rc0-rc1*(rc0/rc1);
+        rc0=rc1;
+        rc1=rc2;
+    }
+    if(rc1.value() > 1)
+    {
+        rc1=rc0-rc1*(rc0/rc1);
+    }
+    std::cout<<rc1.value()<<" = "<<rc1.alpha()<<"*"<<a<<" + "<<rc1.beta()<<"*"<<b<<std::endl;
+}
+
+int factorial(int N)
+{
+    return (N>1) ? N*factorial(N-1) : 1;
+}
+
+int fibonacci(int N)
+{
+    if(N<=0)
+    {
+        return 0;
+    }
+    else if(N==1)
+    {
+        return 1;
+    }
+
+    return fibonacci(N-2)+fibonacci(N-1);
+}
+
+int binom(int N, int k)
+{
+    if(k<0)
+    {
+        return 0;
+    }
+
+    if(N>0)
+    {
+        if(k>N)
+        {
+            return 0;
+        }
+        else if((k==0)||(k==N))
+        {
+            return 1;
+        }
+        return binom(N-1,k-1) + binom(N-1,k);
+    }
+    else if(N<0)
+    {
+        return ( (k%2) ? -1 : 1) * binom(k-N-1,k);
+    }
+    //else: N==0
+    return ((k==0) ? 1: 0);
+}
+
+void hanoi(int tower1, int tower2, int disks)
+{
+    if(disks==1)
+    {
+        std::cout<<tower1<<"->"<<tower2<<std::endl;
+    }
+    else if(disks<1)
+    {
+        std::cout<<"Error\n";
+    }
+    else
+    {
+        int tower3=6-tower1-tower2;
+        hanoi(tower1,tower3,disks-1);
+        hanoi(tower1,tower2,1);
+        hanoi(tower3,tower2,disks-1);
+    }
+}
+
 void print_help()
 {
     std::cout<<"Options:\n\t"
@@ -315,6 +466,11 @@ void print_help()
                "-cpv2\tcalculate polynome value (format: x, a(n), a(n-1), ...)\n\t"
                "-cpd2\tcalculate polynome derivative (format x, a(n), a(n-1), ...)\n\t"
                "-gcd\tcalculate greatest common divisor\n\t"
+               "-ec\tcalculate coefficients based on gcd\n\t"
+               "-fact\tcalculate factorial\n\t"
+               "-fib\tcalculate fibonacci numbers\n\t"
+               "-binom\tcalculate binomial coefficient\n\t"
+               "-hanoi\n\tsolve hanoi towers problem\n\t"
                "\n";
 }
 
@@ -325,7 +481,7 @@ int main(int argc, char *argv[])
     if(argc<=1)
     {
         print_help();
-        return 0;
+        return 1;
     }
 
     if(ARG("-p"))
@@ -388,12 +544,60 @@ int main(int argc, char *argv[])
     }
     else if(ARG("-gcd"))
     {
-        int a,b;
+        int a=1,b=1;
         std::cout<<"A: ";
         std::cin>>a;
         std::cout<<"B: ";
         std::cin>>b;
         std::cout<<"gcd("<<a<<","<<b<<")="<<euclid(24,18)<<"\n";
+    }
+    else if(ARG("-ec"))
+    {
+        int a=1,b=1;
+        std::cout<<"A: ";
+        std::cin>>a;
+        std::cout<<"B: ";
+        std::cin>>b;
+        euclid_coeffs(a,b);
+    }
+    else if(ARG("-fact"))
+    {
+        int N=0;
+        std::cout<<"N: ";
+        std::cin>>N;
+        std::cout<<"N!="<<factorial(N)<<std::endl;
+    }
+    else if(ARG("-fib"))
+    {
+        int n=0;
+        std::cout<<"n: ";
+        std::cin>>n;
+        std::cout<<"fibonacci("<<n<<")="<<fibonacci(n)<<std::endl;
+    }
+    else if(ARG("-binom"))
+    {
+        int n=0,k=0;
+        std::cout<<"n: ";
+        std::cin>>n;
+        std::cout<<"k: ";
+        std::cin>>k;
+        std::cout<<"C("<<n<<","<<k<<")="<<binom(n,k)<<std::endl;
+        if(factorial(n-k)&&factorial(n))
+        {
+        std::cout<<"Check: "<<(((k<=n)&&(k>=0))? factorial(n)/(factorial(k)*factorial(n-k)) : 0)
+                   <<std::endl;
+        }
+        else
+        {
+            std::cout<<"Cannot check - factorial out of bounds\n";
+        }
+    }
+    else if(ARG("-hanoi"))
+    {
+        int disks=1;
+        std::cout<<"Number of Disks: ";
+        std::cin>>disks;
+        hanoi(1,2,disks);
     }
     /*else if(ARG("-vect"))
     {
@@ -414,7 +618,9 @@ int main(int argc, char *argv[])
     {
         std::cout<<"Unknown argument "<<argv[1]<<std::endl;
         print_help();
+        return 1;
     }
+
     return 0;
 }
 
