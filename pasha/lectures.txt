@@ -399,3 +399,164 @@ b.o: b.cpp
 f=a*b+c:	a*b->d1.txt + c->f.txt
 mult - перемножает файлы
 plus - скадывает файлы
+
+
+ОТЛАДКА
+________________________
+Makefile:
+# make prog_ura => выполнится только одно правило
+
+all_targets: prog_simple prog_ku porg_ura prog_ura_ku
+
+prog_simple: main.cpp
+	g++ main.cpp -o prog
+	
+prog_ku: main.cpp
+	g++ main.cpp -o progk -DKU
+	
+prog_ura: main.cpp
+	g++ main.cpp -o progu -DURA
+	
+prog_ku_ura: main.cpp
+	g++ main.cpp -o progku -DKU -DURA
+___________________________
+main.cpp:
+
+#include<iostream>
+using namespace std;
+int main() {
+	#ifdef KU	//выполняется до начала компиляции
+				//если определён KU, то выполняем ...
+				//-Dwww => следующий символ (www) определён
+	cout<<"ku"<<endl;
+	#endif
+	
+	#ifdef URA
+	cout<<"ura!"<<endl;
+	#endif
+}
+
+______________________________________________________________
+
+Комплексные числа
+
+
+Простая программа:
+
+double ax,ay,bx,by,cx,cy; //global
+
+void complex_add(){
+	cx=ax+bx;
+	cy=ay+by;
+}
+
+int main(){
+	ax=3; ay=4; bx=7; by=5;
+	complex_add();
+}
+____________________
+
+Более сложная программа с классами
+(хотим копии этих констукций и ограничить область глобальности)
+
+class Complex {
+	double x,y; //видны из всех методов данного класса
+public:
+// 	Complex(double xx, double yy) {
+//		x=xx;
+//		y=yy;
+//	}
+
+// 	Complex(double x, double y) {
+//		this -> x=x;
+//		this -> y=y;
+//	}
+
+	Complex(double xx, double yy): x(xx), y(yy) {
+	}
+	
+	Complex(): x(0), y(0) {
+	}
+	
+	double abs() {return sqrt(x*x + y*y);}
+	
+	void print(ostream& os){
+		os<<"("<<x<<","<<y<<")"<<endl;
+	}
+	
+//	friend ostream& operator<<(ostream& , const Complex&);
+
+	operator>>(ostream& os) const{
+		return os<<"("<<x<<","<<y<<")"<<endl;
+	}
+
+	operator<<(ostream& os, const Complex& r){
+		return r>>os; //меняем арг местами и обращаемся к >>
+	}
+	
+	Complex operator+(const Complex& r) const{
+		return Complex(x+r.x, y+r.y)
+};
+
+//	ostream&
+//	operator<<(ostream& os, const Complex& r){
+//		return os<<"("<<r.x<<","<<r.y<<")"<<endl;
+//	}
+
+int main() {
+	Complex tt, alpha(3,4), beta(10,20), gamma;
+	tt.x=5; //неправильно!!!, т.к. x э private (т.е. скрыт=инкапсуляция)
+	cout<<"abs="<<alpha.abs()<<endl;
+	alpha.print(cout);
+	
+	cout<<alpha<<endl;	//эти две строчкиэквивалентны
+	operator<<(cout,alpha);
+	
+	alpha.operator>>(cout); //если >> определён внутри класса (как print)
+	alpha >> cout;
+	alpha >> (cout<<"when alpha=")<<"the weather is good<<endl;
+	
+	gamma=alpha+beta;
+//	gamma=alpha.operator+(beta);
+	cout<<alpha<<"+"<<beta<<"="<<gamma<<endl;
+}
+____________________________________________________________________________
+
+Класс массивов
+
+class OurArray{
+	int n;
+	double *pDat;
+public:
+	OurArray(int nn): n(nn){
+		pDat=new double[n];
+	}
+	
+	OurArray(cons &OurArray r){	//копирующий конструктор
+		n=r.n;
+		pDat=new double[r.n];
+		for(int i=0; i<r.n; ++i){
+			pDat[i]=r.pDat;
+		}
+	}
+	
+	double& at(int ind) {return pDat[ind];}
+	
+	ostream& print(ostream& os) const{
+		for(int i=0; i<n; ++i){
+			os<<pDat[i]<<" ";
+		}
+	}
+	
+	~OurArray() {delete []pDat;}
+};
+
+int main(){
+	OurArray x(10);
+	x.at(3)=4;
+	OurArray y=x; //вызов копирующего конструктора
+	x.print(cout)<<endl;
+	
+	OurArray z(10);
+	z=x;	//ошибка -> д.з. (исправить)
+}
