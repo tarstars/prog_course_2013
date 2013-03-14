@@ -35,6 +35,7 @@ int binary(int a)
 
 bool next(int *pa, int *pb)
 {
+  int count=0;
   bool ret=0;
   for(int i=pb-pa - 1;i>0;i--)
   { 
@@ -43,9 +44,21 @@ bool next(int *pa, int *pb)
         pa[i]=0; 
 	pa[i-1]=1;
         ret = true;
-		
+	for(int k=1;k<=count;k++)
+	  {
+	    pa[i+k]=0; 
+	  }
+	for(int k=1;k<=count;k++)
+	  {
+	    pa[pb-pa-k]=1; 
+	  }	
       }
-    else{ ret = false;}
+    else
+      {
+      
+	if(pa[i]==1){count++;}
+	ret = false;
+      }
     if (ret==true) break;
   }
   return  ret;
