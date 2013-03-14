@@ -450,6 +450,51 @@ void hanoi(int tower1, int tower2, int disks)
     }
 }
 
+int bin_euclid(int a, int b)
+{
+    //std::cout<<"Requested bin euclid for "<<a<<","<<b<<"\n";
+    //some checks to make it fool-proof
+    if(!a)
+    {
+        return b;
+    }
+    else if(!b)
+    {
+        return a;
+    }
+    else if(a==b)
+    {
+        return a;
+    }
+
+    if(a<0)
+    {
+        a*=-1;
+    }
+    if(b<0)
+    {
+        b*=-1;
+    }
+
+    //a>0, b>0
+    int gcd=1;
+    while(!(a&0x01) && !(b&0x01)) //both even
+    {
+        gcd<<=1;
+        a>>=1;
+        b>>=1;
+    }
+    while(!(a&0x01)){a>>=1;}
+    while(!(b&0x01)){b>>=1;}
+
+    //both odd; do not check a>=b - will be corrected while fool-proof checks))
+    if((a==1)||(b==1))
+    {
+        return gcd;
+    }
+    return gcd*bin_euclid((a-b)/2,b);
+}
+
 void print_help()
 {
     std::cout<<"Options:\n\t"
@@ -466,6 +511,7 @@ void print_help()
                "-cpv2\tcalculate polynome value (format: x, a(n), a(n-1), ...)\n\t"
                "-cpd2\tcalculate polynome derivative (format x, a(n), a(n-1), ...)\n\t"
                "-gcd\tcalculate greatest common divisor\n\t"
+               "-gcd2\tcalculate greatest common divisor (binary method)\n\t"
                "-ec\tcalculate coefficients based on gcd\n\t"
                "-fact\tcalculate factorial\n\t"
                "-fib\tcalculate fibonacci numbers\n\t"
@@ -474,7 +520,7 @@ void print_help()
                "\n";
 }
 
-#define ARG(x) strcmp(argv[1],(x)) == 0
+#define ARG(x) (strcmp(argv[1],(x)) == 0)
 
 int main(int argc, char *argv[])
 {
@@ -542,14 +588,21 @@ int main(int argc, char *argv[])
     {
         polynome_derive2();
     }
-    else if(ARG("-gcd"))
+    else if(ARG("-gcd")||ARG("-gcd2"))
     {
         int a=1,b=1;
         std::cout<<"A: ";
         std::cin>>a;
         std::cout<<"B: ";
         std::cin>>b;
-        std::cout<<"gcd("<<a<<","<<b<<")="<<euclid(24,18)<<"\n";
+        if(ARG("-gcd"))
+        {
+            std::cout<<"gcd("<<a<<","<<b<<")="<<euclid(a,b)<<"\n";
+        }
+        else
+        {
+            std::cout<<"gcd("<<a<<","<<b<<")="<<bin_euclid(a,b)<<"\n";
+        }
     }
     else if(ARG("-ec"))
     {

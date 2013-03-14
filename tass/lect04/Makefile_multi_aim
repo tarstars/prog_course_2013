@@ -1,0 +1,13 @@
+prog: prog_simple prog_ku prog_ura prog_ura_ku
+
+prog_simple: ura_ku.cpp
+	g++ ura_ku.cpp -o prog 
+
+prog_ku: ura_ku.cpp
+	g++ ura_ku.cpp -o progk -DKU
+
+prog_ura: ura_ku.cpp
+	g++ ura_ku.cpp -o progu -DURA
+
+prog_ura_ku: ura_ku.cpp
+	g++ ura_ku.cpp -o proguk -DKU -DURA
