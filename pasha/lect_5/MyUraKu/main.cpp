@@ -2,13 +2,18 @@
 using namespace std;
 
 int main() {
-	#ifdef KU	//выполняется до начала компиляции
-				//если определён KU, то выполняем ...
-				//-Dwww => следующий символ (www) определён
-	cout<<"ku"<<endl;
-	#endif
-	
-	#ifdef URA
-	cout<<"ura!"<<endl;
-	#endif
+  cout<<"Введите a и b: "<<endl;
+  cin>>a>>b;
+#ifdef plus
+  cout<<"a+b="<<a+b<<endl;
+#endif
+#ifdef minus
+  cout<<"a-b="<<a-b<<endl;
+#endif
+#ifdef product
+  cout<<"a*b="<<a*b<<endl;
+#endif
+#ifdef division
+  cout<<"a/b="<<a/b<<endl;
+#endif
 }
