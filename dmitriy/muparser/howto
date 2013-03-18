@@ -1,0 +1,3 @@
+./muparser "a*a+b*b-c*c"
+make -fMakefile.calc clean
+make -fMakefile.calc all
