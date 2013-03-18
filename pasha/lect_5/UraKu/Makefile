@@ -1,4 +1,4 @@
-# make prog_ura => выполнится только одно правило
+# mingw32-make prog_ura => выполнится только одно правило
 
 all_targets: prog_simple prog_ku porg_ura prog_ura_ku
 
