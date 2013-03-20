@@ -495,7 +495,7 @@ public:
 	}
 	
 	Complex operator+(const Complex& r) const{
-		return Complex(x+r.x, y+r.y)
+		return Complex(x+r.x, y+r.y);
 };
 
 //	ostream&
@@ -699,7 +699,6 @@ Robot::Robot(): x(3), y(3) {}
 
 ostream&
 operator<< (ostream &os, const Robot &r) {
-	os<<r<<" ";
 	return os<<r.x<<", "<<r.y;
 }
 
