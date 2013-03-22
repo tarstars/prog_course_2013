@@ -1,3 +1,4 @@
+#include <iostream>
 #include "myvect.h"
 
 myvect::myvect(): x(0), y(0), z(0) {}
