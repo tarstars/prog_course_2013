@@ -1,9 +1,11 @@
 #include <iostream>
 #include "myvect.h"
 
-myvect::myvect(): x(0), y(0), z(0) {}
+myvect::
+myvect(): x(0), y(0), z(0) {}
 
-myvect::myvect(double a, double b, double c): x(a), y(b), z(c) {}
+myvect::
+myvect(double a, double b, double c): x(a), y(b), z(c) {}
 
 ostream&
 operator<< (ostream& os, const myvect& r) {
