@@ -9,10 +9,10 @@ public:
 	permutation();
 	permutation(int);
 	friend std::ostream& operator<< (std::ostream&, const permutation&);
-	permutation myswap(int, int);
+	void myswap(int, int);
 	permutation operator* (const permutation&);
 	permutation operator= (const permutation&);
-	permutation next();
+	void next();
 	~permutation();
 };
 //_________________________________________________________
@@ -26,12 +26,12 @@ permutation(int nn): n(nn), pb(new int[nn]) {
 	for(int i=0; i<n; ++i) {
 		pb[i]=i+1;
 	}
-	cout<<"constructor for: "<<this<<endl;
+	//cout<<"constructor for: "<<this<<endl;
 }
 
 permutation::
 ~permutation() {
-	cout<<"destructor for: "<<this<<endl;
+	//cout<<"destructor for: "<<this<<endl;
 	delete []pb;
 }
 
@@ -43,10 +43,9 @@ operator<< (ostream &os, const permutation &perm) {
 	return os;
 }
 
-permutation permutation::
+void permutation::
 myswap(int n1, int n2) {
 	::swap(pb[n1-1], pb[n2-1]);
-	return *this;
 }
 
 permutation permutation::
@@ -60,17 +59,17 @@ operator* (const permutation& b) {
 
 permutation permutation::
 operator= (const permutation& b) {
-	cout<<"operator ="<<endl;
 	n=b.n;
 	delete []pb;
 	pb = new int[n];
 	for(int i=0; i<b.n; ++i) {
 		pb[i] = b.pb[i];
 	}
+	//cout<<"operator ="<<endl;
 	return *this;
 }
 
-permutation permutation::
+void permutation::
 next() {
 	int j=n-1;
   
@@ -92,12 +91,12 @@ next() {
 				m=i;
 			}
 		}
-		cout<<"j-1="<<j-1<<";  m="<<m<<endl;
+		//cout<<"j-1="<<j-1<<";  m="<<m<<endl;
 		
-		::swap(pb[j-1], pb[m]);
+ 		::swap(pb[j-1], pb[m]);
 		
 		//сортировка пузырьком
-		for(int k=0; k<=n-1-j; ++k) {
+		for(int k=1; k<=n-1-j; ++k) {
 			for(int i=j; i<=n-1-k; ++i) {
 				if(pb[i]>pb[i+1]) {
 					::swap(pb[i], pb[i+1]);
@@ -105,29 +104,31 @@ next() {
 			}
 		}
 	}
-	return *this;
 }
 //_________________________________________________________
 
 int main() {
-	int a,b, np, yn;
+	int a,b, np, yn=1;
 	cout<<"Длина permutation: ";
 	cin>>np;
 	//______________________________________________
 	
 	permutation perm1(np);
 	cout<<"perm1 = "<<perm1<<endl;
-	yn=1;
 	while((yn==1) || (yn==2)) {
 		cout<<"swap - 1; next - 2: ";
 		cin>>yn;
 		if(yn==1) {
 			cout<<"perm1.myswap(a,b):  (a,b) = ";
 			cin>>a>>b;
-			cout<<"perm1.myswap("<<a<<","<<b<<") = "<<perm1.myswap(a,b)<<endl;
+			cout<<"perm1.myswap("<<a<<","<<b<<") = ";
+			perm1.myswap(a,b);
+			cout<<perm1<<endl;
 		}
 		if(yn==2) {
-			cout<<"perm1.next() = "<<perm1.next()<<endl;
+			cout<<"perm1.next() = ";
+			perm1.next();
+			cout<<perm1<<endl;
 		}
 	}
 	cout<<endl;
@@ -142,10 +143,14 @@ int main() {
 		if(yn==1) {
 			cout<<"perm2.myswap(a,b):  (a,b) = ";
 			cin>>a>>b;
-			cout<<"perm2.myswap("<<a<<","<<b<<") = "<<perm2.myswap(a,b)<<endl;
+			cout<<"perm2.myswap("<<a<<","<<b<<") = ";
+			perm2.myswap(a,b);
+			cout<<perm2<<endl;
 		}
 		if(yn==2) {
-			cout<<"perm2.next() = "<<perm2.next()<<endl;
+			cout<<"perm2.next() = ";
+			perm2.next();
+			cout<<perm2<<endl;
 		}
 	}
 	cout<<endl;
@@ -154,35 +159,7 @@ int main() {
 	permutation perm3=perm1*perm2;
 	cout<<"perm3 = perm1*perm2 = "<<perm3<<endl;
 	
-	//_____________________________________________________________________
-	//на все случаи жизни (НЕ РАБОТАЕТ!!!)
-	
-	/* permutation perm(np), perm1(np), perm2(np);	
-	cout<<"perm1 = "<<perm1<<endl;
-	int yn=1, p12=1;
-	while((p12==1) || (p12==2)) {
-		cout<<"perm1 - 1; perm2 - 2: ";
-		cin>>p12;
-		if(p12==1) {perm=perm1; cout<<"perm (1) - "<<&perm<<endl;}
-		if(p12==2) {perm=perm2; cout<<"perm (2) - "<<&perm<<endl;}
-		if((p12==1) || (p12==2)) {
-			while((yn==1) || (yn==2)) {
-				cout<<"swap - 1; next - 2: ";
-				cin>>yn;
-				if(yn==1) {
-					cout<<"perm"<<p12<<".myswap(a,b):  (a,b) = ";
-					cin>>a>>b;
-					cout<<"perm"<<p12<<".myswap("<<a<<","<<b<<") = "<<perm.myswap(a,b)<<endl;
-				}
-				if(yn==2) {
-					cout<<"perm"<<p12<<".next() = "<<perm.next()<<endl;
-				}
-			}
-			cout<<endl;
-		}
-		if(p12==1) {perm1=perm;}
-		if(p12==2) {perm2=perm;}
-	} */
+
 	
 	return 0;
 }
