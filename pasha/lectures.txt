@@ -1,3 +1,12 @@
+переменна€ среды:	QMAKESPEC
+значение:			win32-g++
+
+D:\Programs (need to install)\fftw-3.3.3\fftw-3.3.3\api
+copy .h files to C:\work\Desktop\Qt\4.8.1\mingw\include
+
+D:\Programs (need to install)\fftw-3.3.3-dll32
+copy all to C:\work\Desktop\Qt\4.8.1\mingw\lib
+
 ¬¬≈ƒ≈Ќ»≈
 1) Git - обмен информацией, позвол€ет следить за историей изменений файлов
 2) G++ - программа-компилл€тор, создаЄт exe-файлы из cpp (необходим mingw и msys)
@@ -634,7 +643,7 @@ int main() {
 			case "s": bob.down(); break;
 			case "d": bob.right(); break;
 		}
-		cout<<bob<<endl;
+		fld.print(cout, bob);
 	}
 	return 0;
 }
@@ -647,25 +656,37 @@ field.h:
 
 #include <string>
 
+class Robot;
+
 class Field {
 	int n;
 	std::string dat;
 public:
 	Field(int nn);
 	char& at(int,int);
+	viod print(std ostream&, const Robot&);
 };
 #endif
 _______________________
 
 field.cpp:
 
+#include <iostream>
 #include "field.h"
+using namespace std;
 
 Field::Field(int nn): n(nn), dat(n*n, '.') {}
 
 char&
 Field::at(int p, int q) {
 	return dat[p*n+q]; //линейное представление двумерного массива
+}
+
+void Field::
+print(std ostream& os, const Robot& r) {
+	//направление изменени€ p,q в циклах
+	//are_you_here(p,q)
+	//Robot::get_symb()
 }
 _______________________
 robot.h:
@@ -675,7 +696,7 @@ robot.h:
 #include <iostream>
 
 class Robot {
-	int x,y;
+	int x,y, n;
 public:
 	Robot();
 	
@@ -695,7 +716,7 @@ robot.cpp:
 #include "robot.h"
 #using namespace std;
 
-Robot::Robot(): x(3), y(3) {}
+Robot::Robot(): x(3), y(3), n(0) {}
 
 ostream&
 operator<< (ostream &os, const Robot &r) {
@@ -725,3 +746,94 @@ ____________________________________________________________________
 2) из .pro файла пересоздать Makefile:	qmake
 3) пересобрать проект: 					mingw32-make
 4) убрать лишнее:						mingw32-make clean
+____________________________________________________________________
+
+ЎјЅЋќЌџ (template)
+	1)генераци€ набора ф-ий или классов, отличающихс€ только типом
+	2)вычисление на этапе компил€ции
+
+//сложение двух эл-тов	
+template<typename T>
+T sum(T x, T y) {
+	return x+y;
+}
+
+template<typename T>
+class coolarr { 		//семейство классов
+	T *p;
+public:
+	coolarr(int n): p(new T[n]) {}
+};
+
+template<int n>
+int fact() {
+	return n*fact<n-1 //считаетс€ на этапе компил€ции !!!
+}
+
+______________________________________________________________
+
+рисуем картинки :)
+
+#include <QImage>
+#include <cmath>
+#include <sstream>
+using namespace std;
+
+int main(int, char**) {
+	int n=300;
+	for(int k=0; k<240; ++k) {
+		QImage sam(n, n, QImage::Format_ARGB32_Premultiplied);
+		for(int p=0; p<n; ++p) {
+			for(int q=0; q<n; ++q) {
+				double dx=q-n/2, dy=p-n/2;
+				double r=sqrt(dx*dx+dy*dy);
+				double v=sin(r/10 - double(k)/240*3*(2*M_PI));
+				double vv=255*(1+v)/2;
+				int val=int(vv);
+				sam.setPixel(q,p, qRgb(val,val,val)); //0<val<255;
+			}
+		}
+		stringstream dest;
+		dest<<k<<"a.jpg";
+		sam.save(dest.str().c_str());
+	}
+	return 0;
+}
+________________________________________________________________
+FT - n^2 сложений и умножений
+
+если длина массива кратна d_i => работаю с кусками => n*(d_1+...+d_s)~=n*log(n)
+FFTW - сишна€ библиотека дл€ быстрого преобразовани€ фурье
+много способов осуществлени€, завис€щие от архитектуры машины
+поэтому нужно выбрать лучший способ (план) - ресурсоемко
+
+в pro файл добавить (не работает!!!)
+LIBS += -lfftw3 -Lc://work//Desktop//Qt//4.8.1//mingw//include//
+
+
+FFTW Plan
+	конструктор (две м-цы и направление)
+	execute
+
+FFTW Matrix a=load_matrix("a.bmp"), b=load_matrix("b.bmp"); //внешн€€ ф-и€
+//им€->qimage->w,h->fftw matrix->заполн€ем м-цу->сохран€ем
+int w=a.width();
+int h=a.height();
+FFTW Matrix ss(h,w), ds(h,w); //конструктор
+FFTW plan ps(ss,ds,FFTW_FORWARD);
+ss.take_from(a); //перенос данных=копирование
+ps.execute();
+FFTW Matrix af.take_from(ds);
+ss.take_from(b);
+ps.execute();
+FFTW Matrix bf.take_from(ds);
+FFTW Matrix cf=mult(af,bf);
+sb,db
+c=...
+save_matrix //создаЄм картинку
+
+a.bmp		b.bmp
+	F		F
+	af		bf
+		F-1
+		c.bmp
