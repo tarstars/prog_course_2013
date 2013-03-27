@@ -815,19 +815,19 @@ FFTW Plan
 	конструктор (две м-цы и направление)
 	execute
 
-FFTW Matrix a=load_matrix("a.bmp"), b=load_matrix("b.bmp"); //внешняя ф-ия
+FFTWMatrix a=load_matrix("a.bmp"), b=load_matrix("b.bmp"); //внешняя ф-ия
 //имя->qimage->w,h->fftw matrix->заполняем м-цу->сохраняем
 int w=a.width();
 int h=a.height();
-FFTW Matrix ss(h,w), ds(h,w); //конструктор
-FFTW plan ps(ss,ds,FFTW_FORWARD);
+FFTWMatrix ss(h,w), ds(h,w); //конструктор
+FFTWPlan ps(ss,ds,FFTW_FORWARD);
 ss.take_from(a); //перенос данных=копирование
 ps.execute();
-FFTW Matrix af.take_from(ds);
+FFTWMatrix af.take_from(ds);
 ss.take_from(b);
 ps.execute();
-FFTW Matrix bf.take_from(ds);
-FFTW Matrix cf=mult(af,bf);
+FFTWMatrix bf.take_from(ds);
+FFTWMatrix cf=mult(af,bf);
 sb,db
 c=...
 save_matrix //создаём картинку
