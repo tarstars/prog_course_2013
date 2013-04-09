@@ -17,7 +17,7 @@ int main() {
     case 'a': bob.left();break;
     case 'd': bob.right();break;
     }
-    cout << bob << endl;
+    fld.print(cout, bob);
   }
 
   return 0;
