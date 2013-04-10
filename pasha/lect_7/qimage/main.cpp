@@ -1,6 +1,5 @@
 ﻿#include <QImage>
 #include <cmath>
-#include <complex>
 #include <sstream>
 using namespace std;
 

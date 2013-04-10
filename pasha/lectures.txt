@@ -1,11 +1,13 @@
 переменная среды:	QMAKESPEC
 значение:			win32-g++
 
-D:\Programs (need to install)\fftw-3.3.3\fftw-3.3.3\api
-copy .h files to C:\work\Desktop\Qt\4.8.1\mingw\include
+скопировать файл ".emacs" в
+c:\Users\Pasha\AppData\Roaming\
 
-D:\Programs (need to install)\fftw-3.3.3-dll32
-copy all to C:\work\Desktop\Qt\4.8.1\mingw\lib
+(setenv "PATH" (concat (getenv "PATH") ";C:\\work\\Desktop\\Qt\\4.8.1\\mingw\\bin"))
+
+скпировать папку fftw в c:/work
+указать в .pro файле:   LIBS += -L"C://work//fftw//lib" -lfftw3
 
 ВВЕДЕНИЕ
 1) Git - обмен информацией, позволяет следить за историей изменений файлов
@@ -664,7 +666,8 @@ class Field {
 public:
 	Field(int nn);
 	char& at(int,int);
-	viod print(std ostream&, const Robot&);
+	void print(std ostream&, const Robot&);
+	~Field();
 };
 #endif
 _______________________
@@ -675,7 +678,13 @@ field.cpp:
 #include "field.h"
 using namespace std;
 
-Field::Field(int nn): n(nn), dat(n*n, '.') {}
+Field::Field(int nn): n(nn), dat(nn*nn) {
+	for(int p=0; p<=n-1; ++p) {
+		for(int q=0; q<=n-1; ++q) {
+			dat[p*n+q]=p+q;
+		}
+	}
+}
 
 char&
 Field::at(int p, int q) {
@@ -684,9 +693,16 @@ Field::at(int p, int q) {
 
 void Field::
 print(std ostream& os, const Robot& r) {
-	//направление изменения p,q в циклах
-	//are_you_here(p,q)
-	//Robot::get_symb()
+	for(int p=n-1; p>=0; --p) { //чтобы (0,0) был в нижнем левом углу
+		for(int q=0; q<=n-1; ++q) {
+			if(are_you_here(p,q)==1) {
+				os<<get_symb(r);
+			}
+			else {
+				os<<at(p,q);
+			}
+		}
+	}
 }
 _______________________
 robot.h:
@@ -696,16 +712,18 @@ robot.h:
 #include <iostream>
 
 class Robot {
-	int x,y, n;
+	int x,y;
+	char n;
 public:
 	Robot();
+	Robot(int,int);
+	friend std::ostream& operator<< (std::ostream&, const Robot&);
+	char get_symb(const Robot&);
 	
 	void right();
 	void left();
 	void up();
 	void down();
-	
-	friend std::ostream& operator<< (std::ostream&, const Robot&);
 };
 
 #endif
@@ -718,26 +736,27 @@ robot.cpp:
 
 Robot::Robot(): x(3), y(3), n(0) {}
 
-ostream&
+Robot::Robot(int xx, int yy): x(xx), y(yy), n(0);
+
+ostream& Robot::
 operator<< (ostream &os, const Robot &r) {
 	return os<<r.x<<", "<<r.y;
 }
 
-void Robot::right() {
-	++x;
-}
+char Robot::
+get_symb(const Robot&) { return n;}
 
-void Robot::left() {
-	--x;
-}
+void Robot::
+right() { ++x;}
 
-void Robot::up() {
-	++y;
-}
+void Robot::
+left() { --x;}
 
-void Robot::down() {
-	--y;
-}
+void Robot::
+up() { ++y;}
+
+void Robot::
+down() { --y;}
 ____________________________________________________________________
 
 Работа с qmake для генерации Makefile.
@@ -807,11 +826,11 @@ FFTW - сишная библиотека для быстрого преобразования фурье
 много способов осуществления, зависящие от архитектуры машины
 поэтому нужно выбрать лучший способ (план) - ресурсоемко
 
-в pro файл добавить (не работает!!!)
+в pro файл добавить
 LIBS += -lfftw3 -Lc://work//Desktop//Qt//4.8.1//mingw//include//
 
 
-FFTW Plan
+FFTWPlan
 	конструктор (две м-цы и направление)
 	execute
 
@@ -835,5 +854,22 @@ save_matrix //создаём картинку
 a.bmp		b.bmp
 	F		F
 	af		bf
+		F1*F2
 		F-1
 		c.bmp
+				
+_______________________________________________
+
+
+двумерное преобразование фурье (в стиле языка Си)
+	1) psour, pdest = fftw_malloc - выделение обл памяти под исходные и конечные данные
+	2) pln = fftw_plan_dft_2d - создание плана (возвращает тип fftw_plan)
+	3) положить входные данные в psour
+	4) fftw_execute(pln)
+	5) забрать выходные данные из pdest
+
+нужны	а) классы fftw_matrix и plan, работаем в main.cpp
+		б) папки test_matrix и test_plan
+		в) custom_test.cpp
+
+одинаковые куски кода => Qt
