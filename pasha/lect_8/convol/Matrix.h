@@ -7,7 +7,7 @@ class Matrix {
 	fftw_complex *pDat;
 	int h, w;
 	Matrix(const Matrix&); //копирующий конструктор
-	Matrix& operator=(const Matrix&);
+	Matrix& operator= (const Matrix&);
 public:
 	Matrix(int,int);
 	~Matrix();
