@@ -7,7 +7,7 @@ TARGET =
 DEPENDPATH += . ..
 INCLUDEPATH += . ..
 CONFIG += qtestlib
-LIBS += -L"C://work//fftw//lib" -lfftw3
+LIBS += -L"D://fftw//lib" -lfftw3
 
 # Input
 SOURCES += test.cpp Matrix.cpp
