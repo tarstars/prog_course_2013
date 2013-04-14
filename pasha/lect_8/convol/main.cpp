@@ -5,18 +5,59 @@
 using namespace std;
 
 int main() {
-	int h=100, w=100;
-	fftw_complex *psource=(fftw_complex *)fftw_malloc(h*w*sizeof(fftw_complex));
-	fftw_complex *pdestination=(fftw_complex *)fftw_malloc(h*w*sizeof(fftw_complex));
+
+	//fftw_complex *psource=(fftw_complex *)fftw_malloc(h*w*sizeof(fftw_complex));
+	//fftw_free(psource);
 	
-	int p=10, q=11;
-	(complex<double>&) psource[p*w+q] = complex<double>(5.2,1.3); //обращение к эл-ту
+	int H=100; W=100;
 	
-	fftw_plan pln = fftw_plan_dft_2d(h,w,psource,pdestination, FFTW_FORWARD, FFTW_ESTIMATE);
+	QImage a(H, W, QImage::Format_ARGB32_Premultiplied);
+	for(int p=0 ; p<H; p++) {
+		for(int q=0; q<W; q++) {
+			double ampl = sin(10*p/H) * sin(20*q/W);
+			if(ampl>0.8) {
+				a.setPixel( p, q, qRgb(255,0,0) );
+			}
+			else {
+				a.setPixel( p, q, qRgb(0,0,0) );
+			}
+		}
+	}
+	a.save("a.png");
 	
-	fftw_execute(pln); //исполнить план
+	QImage b(H, W, QImage::Format_ARGB32_Premultiplied);
+	for(int p=0 ; p<H; p++) {
+		for(int q=0; q<W; q++) {
+			if(q<W/5 && p<H/5) {
+				b.setPixel( p, q, qRgb(255,0,0) );
+			}
+			else {
+				b.setPixel( p, q, qRgb(0,0,0) );
+			}
+		}
+	}
+	b.save("b.png");
+	
+	QImage img("a.png");
+	int wi = img.width();
+	int hi = img.height();
+	
+	Matrix a(hi,wi), aF(hi,wi), bF(hi,wi), c(hi,wi);
+	fftw_plan pln = fftw_plan_dft_2d(&a, &aF, FFTW_FORWARD, FFTW_ESTIMATE);
+	
+	a.load_matrix("b.png");
+	fftw_execute(pln);
+	save_matrix(aF, "bF.png");
+	bF=aF; //т.к. aF будет будет перезаписано планом
+	
+	a.load_matrix("a.png");
+	fftw_execute(pln);
+	save_matrix(aF, "aF.png");
+	
+	c.mult(aF,bF);
+	save_matrix(c, "c.png");
 	
 	fftw_destroy_plan(pln);
-	fftw_free(psource);
-	fftw_free(pdestination);
+	
+	return 1;
 }
