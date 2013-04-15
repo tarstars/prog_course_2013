@@ -1,25 +1,19 @@
-#ifndef _FFTWMATRIX_
-#define _FFTWMATRIX_
+#pragma once
 
-#include <fftw3.h>
 #include <complex>
+#include <fftw3.h>
 
 class FFTWMatrix {
-  int w, h; 
-  fftw_complex *pA;
-public:
-  FFTWMatrix() {};
+  fftw_complex *pDat;
+  int h, w; 
+ public:
+  FFTWMatrix(const FFTWMatrix&);
+  FFTWMatrix& operator=(const FFTWMatrix&);
   FFTWMatrix(int, int);
-  FFTWMatrix(const FFTWMatrix&); 
-  ~FFTWMatrix(); // Destructor
-  std::complex<double> at(int, int); 
-  int width();
-  int height();
-  void take_from(const FFTWMatrix&); 
-  friend FFTWMatrix load_matrix(const char*);
-  friend void save_to_file(FFTWMatrix&, const char*);
-  friend class FFTWPlan;
-  friend FFTWMatrix mult(FFTWMatrix&, FFTWMatrix&);
+  ~FFTWMatrix();
+  int height() const;
+  int width() const;
+  std::complex<double>& at(int, int);
+  const std::complex<double>& at(int, int) const;
+  void take_from(const FFTWMatrix&);
 };
-
-#endif
