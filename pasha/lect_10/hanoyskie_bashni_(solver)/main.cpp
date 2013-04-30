@@ -18,12 +18,16 @@ int solver(int a, int b, int n) {
 int main() {
 	int a,b,n;
 	
-	cout<<"Номер исходной башни: ";
+	//echo откуда куда колец ...
+	//echo 0 1 3 |./solver.exe|./emul.exe
+	
+	//cout<<"Номер исходной башни: ";
 	cin>>a;
-	cout<<"Номер конечной башни: ";
+	//cout<<"Номер конечной башни: ";
 	cin>>b;
-	cout<<"Число колец: ";
+	//cout<<"Число колец: ";
 	cin>>n;
+	cout<<n<<endl;
 	
 	solver(a,b,n);
 	

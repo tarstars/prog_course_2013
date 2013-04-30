@@ -1,0 +1,5 @@
+digraph gluck {
+	pasha -> nastia;
+	nastia -> tania;
+	pasha [label=" *|  \n1a|  \n2b|  \n3c|  "]
+}
