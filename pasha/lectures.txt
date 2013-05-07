@@ -271,6 +271,7 @@ double *pd = &(dat[5]); //указатель на п€тый элемент
 vector<double>::iterator itb= dat.begin(); // ук-ль на нулевой эл-т из dat
 vector<double>::iterator ite= dat.end(); // ук-ль на элемент за последним
 b=*itb; // вз€тие значени€
+reverse_iterator //чтобы пробежатьс€ от конца к началу
 
 
 voit print1(vector<double>::iterator it, int n){
@@ -1022,6 +1023,14 @@ a.find(20); //возвращает итератор: если 20 нет, то ит-р на эл-т за последним: a.
 	
 число строк в дереве: log_2(n)
 
+set<pair<int,int> >::iterator it; //ит-р на эл-т набора пар целых чисел
+set<pair<int,int> >::const_iterator it = ca.begin();
+
+//дл€ укорочени€ записи типов используетс€ typedef
+typedef pair<int,int> PII;
+typedef set<PII> SPII;
+typedef SPII::iterator SPIII;
+
 __________
 
 
@@ -1038,6 +1047,7 @@ __________
 pair<string,int> a;
 a.first="asas";
 a.second=5;
+make_pair(true,5) < make_pair(false,6); //сравнение first, если равны - то second
 _______________________________________________________________________
 
 
@@ -1067,3 +1077,66 @@ bool can_go(char x, char y) {
 		(x&(1<<t)) (y&(1<<t))
 	}
 }
+
+_______________________________________________________________
+
+
+јЋ√ќ–»“ћџ
+
+int s=0;
+for(it=a.begin(); it!=a.end; ++it) {
+	s+=*it;
+}
+
+sum = accomulate(a.begin(), a.end(), 0, f); //int f(int a, int b) {return a+b;}
+											//0 - начальное значение
+											
+auto it = a.begin(); //g++ -std=g++0x -o prog
+_________________
+
+//lambda functions - !! (они не имеют имени и чем-то проще обычных)
+vector<int> v = {4, 5, 6, 8, 7, 999, 212};
+int a = 13;
+int numeven = count_if(v.begin(), v.end(),
+    [a] (int num) {return (a + num) % 2 == 0;});
+__________________
+
+copy(a.begin(), a.end(), ostream_iterator<int>(cout,", ")); //печать массива
+
+a.erase(remove(a.begin(),a.end(),102), a.end());
+//remove удал€ет 102 из а, сдвигает все эл-ты влево и возвращает итератор на эл-т за последним значащим
+//erase удал€ет ненужный нам кусок, в кот. нет информации
+
+complex<double> a(5.1, 6.3); //a = 5 + i*6
+cout<<a;
+cin>>a;
+complex<double> c = a + 2.0;
+c = real(a) + imag(a)/abs(a) + M_PI;
+________________
+
+class Pair {
+public:
+	int x,y;
+	
+	bool operator< (const Pair &a, const Pair &b) {
+		return a.x < b.x;
+	}
+};
+
+vector<Pair> dat;
+sort(...); //неразличимые эл-ты м. оказатьс€ в любом пор€дке
+stable_sort(...); //неразличимые эл-ты остаютс€ в исходном пор€дке
+
+______________
+
+int* pa = new int[100];
+delete []pa;
+
+auto_ptr<Pair> ap(new Pair); //автоматическое освобождение
+auto_ptr<Pair> bp(new Pair) = ap; //указатель перейдЄт к bp, а ap его потер€ет
+
+_______________________________________
+
+
+ƒ»Ќјћ»„≈— ќ≈ ѕ–ќ√–јћћ»–ќ¬јЌ»≈
+
