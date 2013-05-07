@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -6,14 +8,14 @@ bool gb(unsigned char c, int ind) {
   return (c & (1 << ind)) != 0;
 }
 
-ostream& pprint(ostream &os, unsigned char c) {
-  os << int(c) << "\\n";
-  os << (gb(c, 6) ? "  | *" : "* |  ") << "\\n";
+ostream& pprint(ostream &os, unsigned char c, string del) {
+  os << int(c) << del;
+  os << (gb(c, 6) ? "  | *" : "* |  ") << del;
   for(int t = 0; t < 3; ++t) {
     string val("  |  ");
     val[gb(c, t) ? 3 : 0] = '1' + t;
     val[gb(c, t + 3) ? 4 : 1] = 'a' + t;
-    os << val << "\\n";
+    os << val << del;
   }
   return os;
 }
@@ -76,7 +78,7 @@ print_graph(ostream& os) {
   for(unsigned char t = 0; t < 128; ++t) {
     if (valid_state(t)) {
       os << int(t) << "[label = \"";
-      pprint(os, t) << "\"];" << endl;
+      pprint(os, t, "\\n") << "\"];" << endl;
     }
   }
 
@@ -84,10 +86,35 @@ print_graph(ostream& os) {
   return os;
 }
 
+void solve() {
+  int n = 128;
+  vector<int> dat(n, -1);
+  queue<int> todo_queue;
+  todo_queue.push(0);
+  while(!todo_queue.empty() && todo_queue.front() != 127) {
+    int current = todo_queue.front();
+    todo_queue.pop();
+
+    for(int q = 0; q < n; ++q) {
+      if (q != current && dat[q] == -1 && can_go(current, q)) {
+	dat[q] = current;
+	todo_queue.push(q);
+      }
+    }
+  }
+
+  int p = 127;
+  while(p != 0) {
+    p = dat[p];
+    cout << p << endl;
+    pprint(cout, p, "\n") << endl << endl;
+  }
+}
+
 void test_pprint() {
   for(unsigned char t = 0; t < 128; ++t) {
     cout << int(t) << ") " << endl;
-    pprint(cout, t) << endl << endl;
+    pprint(cout, t, "\n") << endl << endl;
   }
 }
 
@@ -95,6 +122,22 @@ void test_graph() {
   print_graph(cout);
 }
 
+void test_solve() {
+  solve();
+}
+
+void test_queue() {
+  queue<int> dat;
+  for(int t = 0; t < 10; ++t) {
+    dat.push(t);
+  }
+
+  while(!dat.empty()) {
+    cout << dat.front() << " ";
+    dat.pop();
+  }
+}
+
 int main() {
-  test_graph();
+  test_solve();
 }
