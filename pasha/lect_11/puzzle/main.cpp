@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -89,18 +90,15 @@ print_graph(ostream& os) {
 void solve() {
 int n = 128;
 	vector<int> dat(n, -1);
-	dat[0] = 0; //исходное положение
-	bool todo = true;
-	while(todo) {
-		todo = false;
-		for(int p=0; p<n; ++p) {
-			if(dat[p] != -1) {
-				for(int q=0; q<n; ++q) {
-					if(p != q && dat[q] == -1 && can_go(p,q)) {
-						dat[q] = p; // откуда сюда пришли
-						todo = true;
-					}
-				}
+	queue<int> todo_queue;
+	todo_queue.push(0);
+	while(!todo_queue.empty() && todo_queue.front()!=127) {
+		int current = todo_queue.front(); //достаём эл-т КК
+		todo_queue.pop(); //выкидываем его из очереди
+		for(int q=0; q<n; ++q) {
+			if(dat[q] == -1 && can_go(current,q)) {//куда можем перейти из КК и где ещё не были
+				dat[q] = current; //пишем окуда сюда попали
+				todo_queue.push(q); //дописываем вконец очереди
 			}
 		}
 	}
@@ -127,7 +125,19 @@ void test_solve() {
 	solve();
 }
 
+void test_queue() {
+	queue<int> dat;
+	for(int t=0; t<10; ++t) {
+		dat.push(t);
+	}
+	while(!dat.empty()) {
+		cout << dat.front() << " ";
+		dat.pop();
+	}
+}
+
 int main() {
-	test_graph();
-	//test_solve();
+	//test_queue();
+	//test_graph();
+	test_solve();
 }
