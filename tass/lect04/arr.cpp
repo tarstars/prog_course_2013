@@ -15,6 +15,18 @@ public:
     for(int t = 0; t < r.n; ++t) 
       pDat[t] = r.pDat[t];
   }
+  OurArray& operator=(const OurArray& r) {
+    if (this == &r) {
+      return *this;
+    }
+    delete [] pDat;
+    n = r.n;
+    pDat = new double[r.n];
+    for(int t = 0; t < r.n; ++t) 
+    pDat[t] = r.pDat[t];
+
+    return *this;
+  }
   double& at(int ind) {return pDat[ind];}
   ostream& print(ostream& os)const {
     for(int t = 0; t < n; ++t) 
