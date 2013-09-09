@@ -150,6 +150,6 @@ void test_solve() {
 
 int main() {
 	//test_pprint();
-	//test_graph();
-	test_solve();
+	test_graph();
+	//test_solve();
 }
