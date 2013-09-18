@@ -13,15 +13,15 @@ class PovRayExport {
   ofstream dest;
 public:
   PovRayExport(string flnm) :dest(flnm.c_str()) {
-    dest << "#version 3.7;\n"
+    dest << "#version 3.6;\n"
       "\n"
       "global_settings {assumed_gamma 1.0}\n"
       "\n"
-      "#declare dist = 10;\n"
+      "#declare dist = 120;\n"
       "\n"
       "camera {\n"
       "  location <dist * cos(2 * pi * clock), 7, dist * sin( 2 * pi * clock)>\n"
-      "  look_at <0, 0, 0>\n"
+      "  look_at <69, 5, 8>\n"
       "  angle 30\n"
       "}\n"
       "\n"
