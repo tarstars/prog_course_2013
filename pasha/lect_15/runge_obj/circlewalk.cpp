@@ -51,7 +51,7 @@ circlewalk::derive() {
 
 Solvable*
 circlewalk::clone() {
-	return new circlewalk(*this);
+	return new circlewalk(*this); //сработает конструктор побитового копирования
 }
 
 void
