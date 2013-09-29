@@ -1,0 +1,78 @@
+﻿#include <iostream>
+#include <vector>
+
+using namespace std;
+
+
+class vector{
+	int x, y, z;
+public:
+	vector operator+ (vector t);
+	vector operator= (vector t);
+	vector operator++ ();
+	void print ();
+	void prisv (int m, int n, int k);
+	int operator* (vector p, vector q);
+}
+vector vector :: operator+ (vector t)
+{
+	vector sum;
+	sum.x = x + t.x;
+	sum.y = y + t.y;
+	sum.z = z + t.z;
+	return sum;
+}
+
+
+vector vector :: operator- (vector t)
+{
+	vector dif;
+	sum.x = x - t.x;
+	sum.y = y - t.y;
+	sum.z = z - t.z;
+	return dif;
+}
+
+vector vector :: operator= (vector t)
+{
+	x = t.x;
+	y = t.y;
+	z = t.z;
+	return *this;
+}
+
+void vector :: print (void)
+{
+	cout << x << "," << y << "," << z << endl;
+}
+void vector :: prisv (int m, int n, int k)
+{
+	x = m;
+	y = n;
+	z = k;
+}
+
+int vector :: operator* (vector p, vector q)
+{
+	int proizv;
+	proizv = p.x*q.x+p.y*q.y+p.z*q.z;
+	return proizv;
+}
+
+void main ()
+{
+	vector a, b, c;
+	a.prisv (1, 2, 3);
+	b.prisv (4, 5, 6);
+	a.print();
+	b.print();
+	
+	c = a + b;
+	c.print();
+	d = a - b;
+	d.print();
+	e = a*b;
+	cout<<e<<endl;
+	
+	
+}
