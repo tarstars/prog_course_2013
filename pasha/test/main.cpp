@@ -6,7 +6,7 @@ int main() {
     if(i==6){
       cout<<i<<" ";
     }
-    elseif(i==7){
+    else if(i==7){
       cout<<i+10<<" ";
     }
     else{
