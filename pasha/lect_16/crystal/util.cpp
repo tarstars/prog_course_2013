@@ -8,9 +8,9 @@
 Vec3 makeVec3_norm(double x, double y, double z) {
     Vec3 new_vec3;
     double norm = sqrt(x*x + y*y + z*z);
-    *new_vec3.get(0) = x/norm;
-    *new_vec3.get(1) = y/norm;
-    *new_vec3.get(2) = z/norm;
+    *new_vec3.set(0) = x/norm;
+    *new_vec3.set(1) = y/norm;
+    *new_vec3.set(2) = z/norm;
     return new_vec3;
 }
 
@@ -20,7 +20,7 @@ Tensor4 makeTensor4(double c11, double c12, double c13,
                     double c33, double c44, double c66) {
     Tensor4 new_tens;
 
-    double* tens2 = new double[36]();
+    double tens2[36];
     tens2[0] = c11;  tens2[1] = c12;  tens2[2] = c13;
     tens2[6] = c12;  tens2[7] = c11;  tens2[8] = c13;
     tens2[12] = c13; tens2[13] = c13; tens2[14] = c33;
@@ -43,13 +43,12 @@ Tensor4 makeTensor4(double c11, double c12, double c13,
         if(b==4) k=0, l=2;
         if(b==5) k=0, l=1;
 
-        *new_tens.get(i,j,k,l) =
-                *new_tens.get(j,i,k,l) = *new_tens.get(i,j,l,k) =
-                *new_tens.get(j,i,l,k) = *new_tens.get(k,l,i,j) =
-                *new_tens.get(l,k,i,j) = *new_tens.get(l,k,j,i) =
-                *new_tens.get(k,l,j,i) = tens2[b+6*a];
+        *new_tens.set(i,j,k,l) =
+                *new_tens.set(j,i,k,l) = *new_tens.set(i,j,l,k) =
+                *new_tens.set(j,i,l,k) = *new_tens.set(k,l,i,j) =
+                *new_tens.set(l,k,i,j) = *new_tens.set(l,k,j,i) =
+                *new_tens.set(k,l,j,i) = tens2[b+6*a];
     }
-    delete[] tens2;
     return new_tens;
 }
 
@@ -57,12 +56,12 @@ Tensor4 makeTensor4(double c11, double c12, double c13,
 
 Mat3 christoffel(Tensor4 tens4, Vec3 n) {
     Mat3 new_matrix;
-    //?_il= c_ijkl * n_j * n_k;
+    //\Gamma_il= c_ijkl * n_j * n_k;
     for(int i=0; i<3; ++i) {
         for(int l=0; l<3; ++l) {
             for(int j=0; j<3; ++j) {
                 for(int k=0; k<3; ++k) {
-                    *new_matrix.get(i,l) +=
+                    *new_matrix.set(i,l) +=
                             tens4.at(i,j,k,l) * n.at(j) * n.at(k);
                 }
             }

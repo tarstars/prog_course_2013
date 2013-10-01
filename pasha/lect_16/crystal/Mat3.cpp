@@ -8,7 +8,7 @@ Mat3::
 Mat3::Mat3(): matrix(new double[9]()) {}
 
 double*
-Mat3::get(int i, int j) {
+Mat3::set(int i, int j) {
     return matrix + j + 3*i;
 }
 

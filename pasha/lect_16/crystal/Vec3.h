@@ -5,6 +5,6 @@ class Vec3 {
 public:
     Vec3();
     double at(int) const;
-    double* get(int);
+    double* set(int);
     ~Vec3();
 };

@@ -5,6 +5,6 @@ class SolPart {
 public:
     SolPart();
     double at(int) const;
-    double* get(int);
+    double* set(int);
     ~SolPart();
 };

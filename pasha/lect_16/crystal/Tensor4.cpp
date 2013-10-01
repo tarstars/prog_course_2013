@@ -8,7 +8,7 @@ Tensor4::
 Tensor4::Tensor4(): tens(new double[81]()) {}
 
 double*
-Tensor4::get(int i, int j, int k, int l) {
+Tensor4::set(int i, int j, int k, int l) {
     return tens + j + 3*i + 9*k + 27*l;
 }
 
