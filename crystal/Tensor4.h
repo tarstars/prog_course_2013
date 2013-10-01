@@ -16,6 +16,7 @@ public:
 	class RangeErr {};
 
 	Tensor4() : v(81) {}
+	~Tensor4() { v.~vector(); }
 	Tensor4(const Tensor4& t) : v(t.v) {}
 	Tensor4& operator =(const Tensor4& t) {
 		if(&t == this)
