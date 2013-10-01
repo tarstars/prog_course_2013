@@ -5,7 +5,7 @@ int main() {
   vector<SolPart> sols = solveChristoffel(chrMat);
 }
 
-//Паша - makeTetragonalMaterialTensor
-//Андрей - Polynomial
-//Таня - Mat3
-//Максим - Tensor4
+//Андрей - MatrixToPoly
+//Настя - нормализация вектора
+//Таня - eval
+//CalcPol - Паша

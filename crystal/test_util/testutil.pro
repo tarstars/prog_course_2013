@@ -9,4 +9,4 @@ INCLUDEPATH += . ..
 CONFIG += qtestlib
 
 # Input
-SOURCES += testutil.cpp util.cpp
+SOURCES += testutil.cpp util.cpp vec3.cpp matrix.cpp 

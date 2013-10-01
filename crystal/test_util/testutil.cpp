@@ -1,3 +1,4 @@
+#include "matrix.h"
 #include <QtTest/QtTest>
 #include "vec3.h"
 #include "Tensor4.h"
@@ -8,6 +9,7 @@ class TestUtil: public QObject
   Q_OBJECT
   private slots:
   void testMakeTetragonalTensor();
+  void testChristoffel();
 };
 
 void TestUtil::testMakeTetragonalTensor()
@@ -35,6 +37,27 @@ void TestUtil::testMakeTetragonalTensor()
   }
 }
 
- QTEST_MAIN(TestUtil)
- #include "testutil.moc"
+void
+TestUtil::testChristoffel() {
+  Tensor4 tens = makeTetragonalTensor(11, 12, 13, 33, 44, 66);
+  Vec3 n(1, 0, 0);
+  Matrix christ = christoffel(tens, n);
+
+  QVERIFY(christ.Get(0, 0) == 11);
+  QVERIFY(christ.Get(0, 1) == 0);
+  QVERIFY(christ.Get(0, 2) == 0);
+
+  QVERIFY(christ.Get(1, 0) == 0);
+  QVERIFY(christ.Get(1, 1) == 66);
+  QVERIFY(christ.Get(1, 2) == 0);
+
+  QVERIFY(christ.Get(2, 0) == 0);
+  QVERIFY(christ.Get(2, 1) == 0);
+  QVERIFY(christ.Get(2, 2) == 44);
+  
+}
+
+
+QTEST_MAIN(TestUtil)
+#include "testutil.moc"
 

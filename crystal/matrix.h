@@ -12,7 +12,7 @@ class Matrix{
  public:
   Matrix(int a, int b);
   ~Matrix();
-  Matrix(Matrix &r);
+  Matrix(const Matrix &r);
   void print();
   void put();
   void Set(int a, int b, double c);
