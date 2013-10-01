@@ -14,6 +14,6 @@ Vec3::at(int i) const{
 }
 
 double*
-Vec3::get(int i) {
+Vec3::set(int i) {
     return vec3 + i;
 }

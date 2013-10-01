@@ -14,6 +14,6 @@ SolPart::at(int i) const{
 }
 
 double*
-SolPart::get(int i) {
+SolPart::set(int i) {
     return sol + i;
 }
