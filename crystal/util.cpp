@@ -7,6 +7,10 @@ Tensor4 makeTetragonalTensor(double c11, double c12, double c13, double c33, dou
     Tensor4 new_tens;
 
     double tens2[36];
+    for(int t = 0; t < 36; t++) {
+      tens2[t] = 0;
+    }
+
     tens2[0] = c11;  tens2[1] = c12;  tens2[2] = c13;
     tens2[6] = c12;  tens2[7] = c11;  tens2[8] = c13;
     tens2[12] = c13; tens2[13] = c13; tens2[14] = c33;

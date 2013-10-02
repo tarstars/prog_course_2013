@@ -15,7 +15,7 @@ class Tensor4 {
 public:
 	class RangeErr {};
 
-	Tensor4() : v(81) {}
+ Tensor4() : v(81) {for(int t = 0; t < 81; t++) v[t] = 0;}
     //~Tensor4() { v.~vector(); }
     //Tensor4(const Tensor4& t) : v(t.v) {}
     /*Tensor4& operator =(const Tensor4& t) {

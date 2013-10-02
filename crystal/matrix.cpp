@@ -10,6 +10,13 @@ Matrix::Matrix(int a, int b){
   for(int i = 0; i < lines; ++i){
     matr[i] = new int [colums];
   }
+  
+  for(int p = 0; p < lines; p++) {
+    for(int q = 0; q < colums; q++) {
+      matr[p][q] = 0;
+    }
+  }
+  
   return;
 }
 
