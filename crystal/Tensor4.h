@@ -15,15 +15,16 @@ class Tensor4 {
 public:
 	class RangeErr {};
 
-	Tensor4() : v(81) {}
-	Tensor4(const Tensor4& t) : v(t.v) {}
-	Tensor4& operator =(const Tensor4& t) {
+ Tensor4() : v(81) {for(int t = 0; t < 81; t++) v[t] = 0;}
+    //~Tensor4() { v.~vector(); }
+    //Tensor4(const Tensor4& t) : v(t.v) {}
+    /*Tensor4& operator =(const Tensor4& t) {
 		if(&t == this)
 			return *this;
 		v.clear();
 		v = t.v;
 		return *this;
-	}
+    }*/
 	void set(int i, int j, int k, int l, double x) {
 		checkRE(i, j, k, l);
 		v[27*i + 9*j + 3*k + l] = x;

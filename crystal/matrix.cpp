@@ -10,6 +10,13 @@ Matrix::Matrix(int a, int b){
   for(int i = 0; i < lines; ++i){
     matr[i] = new int [colums];
   }
+  
+  for(int p = 0; p < lines; p++) {
+    for(int q = 0; q < colums; q++) {
+      matr[p][q] = 0;
+    }
+  }
+  
   return;
 }
 
@@ -24,7 +31,7 @@ void Matrix:: put(){
   cout << "Enter the matrix's elements" << endl;
   for (int i = 0; i < lines; ++i){
     for (int j = 0; j < colums; ++j){
-      cout << "c[" << i+1 <<"][" << j+1 <<"] =";
+      cout << "c[" << i <<"][" << j <<"] =";
       cin >> matr[i][j];
       cout << endl;
     }
@@ -40,7 +47,7 @@ void Matrix::print(){
   }
 }
 
-Matrix::Matrix(Matrix &r){
+Matrix::Matrix(const Matrix &r){
   colums = r.colums;
   lines = r.lines;
   matr = new int *[lines];
@@ -54,9 +61,9 @@ Matrix::Matrix(Matrix &r){
 }
 
 void Matrix::Set(int a, int b, double c ){
-  matr[a-1][b-1] = c;
+  matr[a][b] = c;
 }
 
 double Matrix::Get(int a, int b){
-  return matr [a-1][b-1];
+  return matr [a][b];
 }

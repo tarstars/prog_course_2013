@@ -15,7 +15,7 @@ bool next(int *pa, int *pb){
 }
 
 int main() {
-  int a[]={1,1,1,1,1};
+  int a[]={0,0,0,1,1};
   int l=sizeof(a)/sizeof(int);
   int exit=0, b[l];
   for(int i=0; i<=l-1; i++){
