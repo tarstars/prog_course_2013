@@ -3,6 +3,8 @@
 #include "vec3.h"
 #include "Tensor4.h"
 #include "util.h"
+#include "polynom.h"
+#include "matrix.h"
 
 class TestUtil: public QObject
 {
@@ -10,6 +12,7 @@ class TestUtil: public QObject
   private slots:
   void testMakeTetragonalTensor();
   void testChristoffel();
+  void testMatrixToPoly();
 };
 
 void TestUtil::testMakeTetragonalTensor()
@@ -57,6 +60,15 @@ TestUtil::testChristoffel() {
   
 }
 
+void
+TestUtil::testMatrixToPoly(){
+  Matrix mat(3,3);
+  Polynom Pol;
+  Pol = MatrixToPoly(mat);
+
+  
+  QVERIFY(Pol.get(0) == 1);
+}
 
 QTEST_MAIN(TestUtil)
 #include "testutil.moc"

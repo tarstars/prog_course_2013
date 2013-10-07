@@ -7,11 +7,6 @@ TARGET =
 DEPENDPATH += . ..
 INCLUDEPATH += . ..
 CONFIG += qtestlib
-QMAKE_CXXFLAGS += -O2
 
 # Input
-SOURCES += testutil.cpp\
- util.cpp\
- vec3.cpp\
- matrix.cpp\
-polynom.cpp
+SOURCES += testpolynom.cpp polynom.cpp
