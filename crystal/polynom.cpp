@@ -50,3 +50,19 @@ void Polynom::set(double ww,double xx, double yy, double zz){
   z = zz;
 
 }
+
+double Polynom::get(int n)
+{
+  double ret=0;
+
+  if(n==0)
+    ret = w;
+  if(n==1)
+    ret = x;
+  if(n==2)
+    ret = y;
+  if(n==3)
+    ret = z;
+
+  return ret; 
+}

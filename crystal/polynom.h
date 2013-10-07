@@ -8,5 +8,7 @@ class Polynom{
  Polynom(double ww,double xx, double yy, double zz) : w(ww), x(xx),y(yy), z(zz){}
   friend std:: ostream& operator<<(std::ostream&, const Polynom&);
   void set(double ww,double xx, double yy, double zz);
-  std::vector<double> solvePolynom();// solve cubic equation if all roots are real; 
+  std::vector<double> solvePolynom();// solve cubic equation if all roots are real;
+
+  double get(int n); 
 };

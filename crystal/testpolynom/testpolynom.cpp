@@ -29,7 +29,7 @@ void TestPolynom::setGet()
   QVERIFY(roots[2] == 0);
 
   Pol.set(1,-9,-46,120);
-  cout<<roots[0]<<' '<<roots[1]<<' '<<roots[2]<<' '<<endl;
+  // cout<<roots[0]<<' '<<roots[1]<<' '<<roots[2]<<' '<<endl;
   QVERIFY(abs(roots[0]+5)<eps );
   QVERIFY(abs(roots[1]-12)<eps);
   QVERIFY(abs(roots[2]-2) < eps );

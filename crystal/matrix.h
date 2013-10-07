@@ -17,6 +17,10 @@ class Matrix{
   void put();
   void Set(int a, int b, double c);
   double Get(int a, int b);
+  double trace(const Matrix&);
+  Matrix operator*(const Matrix&);
+  Matrix operator*(const double&);
+  double det(const Matrix&);
 };
 
  

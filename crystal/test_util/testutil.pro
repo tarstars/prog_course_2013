@@ -13,4 +13,5 @@ QMAKE_CXXFLAGS += -O2
 SOURCES += testutil.cpp\
  util.cpp\
  vec3.cpp\
- matrix.cpp
+ matrix.cpp\
+polynom.cpp

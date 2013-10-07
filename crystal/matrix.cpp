@@ -67,3 +67,20 @@ void Matrix::Set(int a, int b, double c ){
 double Matrix::Get(int a, int b){
   return matr [a][b];
 }
+
+double Matrix::trace(const Matrix& mat){
+  return 1;
+}
+
+Matrix Matrix::operator*(const Matrix& mat){
+  return mat;
+}
+
+Matrix Matrix::operator*(const double& alpha)
+{
+  return *this;
+}
+
+double Matrix::det(const Matrix& mat){
+  return 1;
+}

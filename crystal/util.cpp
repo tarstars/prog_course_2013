@@ -2,6 +2,7 @@
 #include "util.h"
 #include "Tensor4.h"
 #include "vec3.h"
+#include "polynom.h"
 
 Tensor4 makeTetragonalTensor(double c11, double c12, double c13, double c33, double c44, double c66) {
     Tensor4 new_tens;
@@ -65,3 +66,16 @@ Matrix christoffel(const Tensor4& tens4, const Vec3& n) {
     return new_matrix;
 }
 
+
+Polynom MatrixToPoly(const Matrix& mat)
+{
+  Matrix Mat2 = mat*mat;
+  Polynom Pol(1,2,3,4);
+  double a1,a2,a3,a4; // polynomial coefficents at x^3, x^2, x^1, x^0; 
+  a1 = 1;
+  a2 = -1*mat.trace(mat);
+  a3 = -0.5*mat.trace(mat2) + 0.5*mat.trace(mat)*mat.trace;
+  a4 = -1*mat.det(A);
+  Pol.set(a1,a2,a3,a4); 
+  return Pol;
+}
