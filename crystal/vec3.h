@@ -13,6 +13,9 @@ public:
 	
 	void set(int, double);
 	double at(int) const;
+	double abs() const;
+	Vec3 normalized() const;
+	void normalize();
 
 	friend std::ostream& operator << (std::ostream&, const Vec3&);
 };
