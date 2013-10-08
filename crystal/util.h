@@ -10,3 +10,5 @@ Tensor4 makeTetragonalTensor(double c11, double c12, double c13, double c33, dou
 Matrix christoffel(const Tensor4& tens4, const Vec3& n);
 
 Polynom MatrixToPoly(const Matrix&);
+
+Vec3 CalcPol(const Matrix& G);

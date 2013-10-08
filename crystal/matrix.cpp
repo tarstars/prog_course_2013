@@ -85,5 +85,5 @@ Matrix Matrix::operator*(const Matrix& mat) const{
 }
 
 double Matrix::det() const{
-  return 1;
+  return 0;
 }
