@@ -1,10 +1,17 @@
 #pragma once
 
-Vec3 makeVec3_norm(double, double, double);
+class Tensor4;
+class Matrix;
+class Vec3;
+class Polynom;
 
-Tensor4 makeTensor4(double, double, double,
-                    double, double, double);
+Tensor4 makeTetragonalTensor(double c11, double c12, double c13,
+                             double c33, double c44, double c66);
 
-Mat3 christoffel(Tensor4, Vec3);
+Matrix christoffel(const Tensor4& tens4, const Vec3& n);
 
-//vector<SolPart> solveChristoffel(Mat3);
+Polynom Matrix2Poly(const Matrix& G);
+
+Matrix eval(const Matrix& G, double root);
+
+Vec3 CalcPol(Matrix G_root);

@@ -1,27 +1,42 @@
 #include <iostream>
-#include<stdio.h>
-#include<conio.h>
+#include <stdio.h>
+#include <conio.h>
+#include <vector>
 
 #include "Vec3.h"
 #include "Tensor4.h"
-#include "Mat3.h"
+#include "matrix.h"
 #include "util.h"
+#include "polynom.h"
 
 using namespace std;
 
 int main() {
-    Vec3 n = makeVec3_norm(1,0,0);
-    Tensor4 tens4 = makeTensor4(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
-    Mat3 chrMat4 = christoffel(tens4, n);
-    //Poly pol = Matrix2Poly(chrMat4);
-    //Polinomial::all_roots; //корни куб. ур.
-    //eval(Matrix, root)
-    //vecPolarization = calcPol(Matrix); //поляризация
-    //det()=0 => вектора строк кристоффеля - в одной плоскости
+    Tensor4 c_ij = makeTetragonalTensor(11, 12, 13, 33, 44, 66);
+    //cout << tens;
+
+    Vec3 n(1, 1, 0);
+    n.normalized();
+    //cout << n.abs() << endl;
+
+    Matrix Gamma_ij = christoffel(c_ij, n);
+    //Gamma_ij.print();
+
+    Polynom poly = Matrix2Poly(Gamma_ij);
+    //cout << pol << endl << endl;
+
+    double* root = poly.solvePolynom(); //корни куб. ур-я
+    //cout << root[0] << "; " << root[1] << "; " << root[2] << endl;
+
+    Matrix G_root = eval(Gamma_ij, root[0]);
+    G_root.print();
+
+    Vec3 polariz = CalcPol(G_root); //поляризация
+    cout << polariz << endl;
+
+    //det()=0 => вектора строк матрицы лежат в одной плоскости
     //векторное произведение -> max
 
-    //cout << n.at(0) << "; " << n.at(1) << "; " <<n.at(2) << endl;
-    //cout << tens4.at(0,0,1,1) << endl;
-    cout << chrMat4.at(0,0) << endl;
     getch();
+    return 1;
 }

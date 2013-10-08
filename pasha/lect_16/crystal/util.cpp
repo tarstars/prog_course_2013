@@ -1,77 +1,136 @@
-#include "Vec3.h"
-#include "Tensor4.h"
-#include "Mat3.h"
+#include "matrix.h"
 #include "util.h"
+#include "Tensor4.h"
+#include "vec3.h"
+#include "polynom.h"
+//__________________________________________________________________
 
-#include <cmath>
-
-Vec3 makeVec3_norm(double x, double y, double z) {
-    Vec3 new_vec3;
-    double norm = sqrt(x*x + y*y + z*z);
-    *new_vec3.set(0) = x/norm;
-    *new_vec3.set(1) = y/norm;
-    *new_vec3.set(2) = z/norm;
-    return new_vec3;
-}
-
-//________________________________________________________
-
-Tensor4 makeTensor4(double c11, double c12, double c13,
-                    double c33, double c44, double c66) {
+Tensor4 makeTetragonalTensor(double c11, double c12, double c13,
+                             double c33, double c44, double c66) {
     Tensor4 new_tens;
 
-    double tens2[36];
-    tens2[0] = c11;  tens2[1] = c12;  tens2[2] = c13;
-    tens2[6] = c12;  tens2[7] = c11;  tens2[8] = c13;
-    tens2[12] = c13; tens2[13] = c13; tens2[14] = c33;
-    tens2[21] = c44; tens2[28] = c44; tens2[35] = c66;
+    double tens2[6][6] = {
+        {c11, c12, c13,   0,   0,   0},
+        {c12, c11, c13,   0,   0,   0},
+        {c13, c13, c33,   0,   0,   0},
+        {  0,   0,   0, c44,   0,   0},
+        {  0,   0,   0,   0, c44,   0},
+        {  0,   0,   0,   0,   0, c66}};
 
-    int a=0, b;
-    int i, j, k, l;
-    for(int n=0; n<36; ++n) {
+    double mat[3][3] = {
+        {1, 6, 5},
+        {6, 2, 4},
+        {5, 4, 3}};
 
-        if((n%6 == 0) && n!=0) a+=1;
-        b = n - 6*a;
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            for(int k=0; k<3; ++k) {
+                for(int l=0; l<3; ++l) {
+                    int a = mat[i][j];
+                    int b = mat[k][l];
+                    double v = tens2[a-1][b-1];
+                    new_tens.set(i,j,k,l,v);
+                }
+            }
 
-        if(a==0 || a==1 || a==2) i=a, j=a;
-        if(a==3) i=1, j=2;
-        if(a==4) i=0, j=2;
-        if(a==5) i=0, j=1;
-
-        if(b==0 || b==1 || b==2) k=b, l=b;
-        if(b==3) k=1, l=2;
-        if(b==4) k=0, l=2;
-        if(b==5) k=0, l=1;
-
-        *new_tens.set(i,j,k,l) =
-                *new_tens.set(j,i,k,l) = *new_tens.set(i,j,l,k) =
-                *new_tens.set(j,i,l,k) = *new_tens.set(k,l,i,j) =
-                *new_tens.set(l,k,i,j) = *new_tens.set(l,k,j,i) =
-                *new_tens.set(k,l,j,i) = tens2[b+6*a];
+        }
     }
     return new_tens;
 }
+//__________________________________________________________________
 
-//_________________________________________________________________
+Matrix christoffel(const Tensor4& tens4, const Vec3& n) {
 
-Mat3 christoffel(Tensor4 tens4, Vec3 n) {
-    Mat3 new_matrix;
+    Matrix new_matrix(3,3);
+  
     //\Gamma_il= c_ijkl * n_j * n_k;
     for(int i=0; i<3; ++i) {
         for(int l=0; l<3; ++l) {
+            double val = 0;
             for(int j=0; j<3; ++j) {
                 for(int k=0; k<3; ++k) {
-                    *new_matrix.set(i,l) +=
-                            tens4.at(i,j,k,l) * n.at(j) * n.at(k);
+                    val += tens4.at(i,j,k,l) * n.at(j) * n.at(k);
                 }
             }
+            new_matrix.Set(i, l, val);
         }
     }
+  
     return new_matrix;
 }
+//__________________________________________________________________
 
+Polynom Matrix2Poly(const Matrix& G) {
+
+    double a0, a1, a2, a3;
+    double G00 = G.Get(0,0);
+    double G01 = G.Get(0,1);
+    double G02 = G.Get(0,2);
+    double G11 = G.Get(1,1);
+    double G12 = G.Get(1,2);
+    double G22 = G.Get(2,2);
+
+
+    a3 = -1.0;
+    a2 = G00 + G11 + G22;
+    a1 = G01*G01 + G02*G02 + G12*G12 -
+         G00*G11 - G00*G22 - G11*G22;
+    a0 = - G22*G01*G01 + 2*G01*G02*G12 - G11*G02*G02
+         - G00*G12*G12 + G00*G11*G22;
+
+    Polynom new_pol(a3, a2, a1, a0);
+
+    return new_pol;
+}
+//________________________________________________________________
+
+Matrix eval(const Matrix& G, double root) {
+    Matrix new_G = G;
+    double val;
+    for(int i=0; i<3; ++i) {
+        val = G.Get(i,i) - root;
+        new_G.Set(i,i,val);
+    }
+
+    return new_G;
+}
 //_________________________________________________________________
 
-/*vector<SolPart> solveChristoffel(Mat3 chrMat) {
+Vec3 CalcPol(Matrix G) {
+    Vec3 a0, a1, a2;
 
-}*/
+    a0.set(0, G.Get(0,1)*G.Get(1,2) -
+              G.Get(1,1)*G.Get(0,2));
+    a0.set(1, G.Get(1,0)*G.Get(0,2) -
+              G.Get(0,0)*G.Get(1,2));
+    a0.set(2, G.Get(0,0)*G.Get(1,1) -
+              G.Get(1,0)*G.Get(0,1));
+
+    a1.set(0, G.Get(1,1)*G.Get(2,2) -
+              G.Get(2,1)*G.Get(1,2));
+    a1.set(1, G.Get(2,0)*G.Get(1,2) -
+              G.Get(1,0)*G.Get(2,2));
+    a1.set(2, G.Get(1,0)*G.Get(2,1) -
+              G.Get(2,0)*G.Get(1,1));
+
+    a2.set(0, G.Get(0,1)*G.Get(2,2) -
+              G.Get(2,1)*G.Get(0,2));
+    a2.set(1, G.Get(2,0)*G.Get(0,2) -
+              G.Get(0,0)*G.Get(2,2));
+    a2.set(2, G.Get(0,0)*G.Get(2,1) -
+              G.Get(2,0)*G.Get(0,1));
+
+    double norm[3] = {a0.abs(), a1.abs(), a2.abs()};
+    double max_norm = norm[0];
+    double n = 0;
+    for(int i=1; i<=2; ++i) {
+        if(max_norm < norm[i]) {
+            max_norm = norm[i];
+            n += 1;
+        }
+    }
+
+    if(n==0) return a0.normalized();
+    if(n==1) return a1.normalized();
+    if(n==2) return a2.normalized();
+}
