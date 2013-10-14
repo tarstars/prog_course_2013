@@ -3,6 +3,7 @@
 #include "Tensor4.h"
 #include "vec3.h"
 #include "polynom.h"
+#include "SolPart.h"
 //__________________________________________________________________
 
 Tensor4 makeTetragonalTensor(double c11, double c12, double c13,
@@ -60,77 +61,88 @@ Matrix christoffel(const Tensor4& tens4, const Vec3& n) {
 }
 //__________________________________________________________________
 
-Polynom Matrix2Poly(const Matrix& G) {
+Polynom Matrix2Poly(const Matrix& mat) {
+    Matrix mat2 = mat*mat;
+    Polynom Pol(1,2,3,4);
+    double a1,a2,a3,a4; // polynomial coefficents at x^3, x^2, x^1, x^0;
 
-    double a0, a1, a2, a3;
-    double G00 = G.Get(0,0);
-    double G01 = G.Get(0,1);
-    double G02 = G.Get(0,2);
-    double G11 = G.Get(1,1);
-    double G12 = G.Get(1,2);
-    double G22 = G.Get(2,2);
+    a1 = -1;
+    a2 = 1*mat.trace();
+    a3 = 0.5*mat2.trace() - 0.5*mat.trace()*mat.trace();
+    a4 = 1*mat.det();
+    Pol.set(a1,a2,a3,a4);
 
-
-    a3 = -1.0;
-    a2 = G00 + G11 + G22;
-    a1 = G01*G01 + G02*G02 + G12*G12 -
-         G00*G11 - G00*G22 - G11*G22;
-    a0 = - G22*G01*G01 + 2*G01*G02*G12 - G11*G02*G02
-         - G00*G12*G12 + G00*G11*G22;
-
-    Polynom new_pol(a3, a2, a1, a0);
-
-    return new_pol;
+    return Pol;
 }
 //________________________________________________________________
 
-Matrix eval(const Matrix& G, double root) {
-    Matrix new_G = G;
+vector<Matrix> eval(const Matrix& M, const vector<double>& root) {
+    vector<Matrix> new_M(3,M);
     double val;
     for(int i=0; i<3; ++i) {
-        val = G.Get(i,i) - root;
-        new_G.Set(i,i,val);
+        for(int j=0; j<3; ++j) {
+            val = M.Get(j,j) - root[i];
+            new_M[i].Set(j,j,val);
+        }
     }
+    return new_M;
+}
+//________________________________________________________________
 
-    return new_G;
+vector<Vec3> CalcPol(const vector<Matrix>& G) {
+    vector<Vec3> a0(3), a1(3), a2(3), a(3);
+    vector<Vec3> v0(3), v1(3), v2(3);
+
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            a0[i].set(j, G[i].Get(0,j));
+            a1[i].set(j, G[i].Get(1,j));
+            a2[i].set(j, G[i].Get(2,j));
+        }
+        v0[i] = a0[i] * a1[i];
+        v1[i] = a0[i] * a2[i];
+        v2[i] = a1[i] * a2[i];
+        if((v0[i].abs() >= v1[i].abs()) &&
+           (v0[i].abs() >= v2[i].abs()))
+                a[i] = v0[i].normalized();
+        else if((v1[i].abs() >= v0[i].abs()) &&
+                (v1[i].abs() >= v2[i].abs()))
+                a[i] = v1[i].normalized();
+        else
+                a[i] = v2[i].normalized();
+    }
+    return a;
 }
 //_________________________________________________________________
 
-Vec3 CalcPol(Matrix G) {
-    Vec3 a0, a1, a2;
+vector<SolPart> solveChristoffel(const Tensor4& c_ij, const Vec3& n) {
+    Matrix Gamma_ij = christoffel(c_ij, n);
+    cout << "christoffel(c_ij, n)" << endl;
+    Gamma_ij.print();
 
-    a0.set(0, G.Get(0,1)*G.Get(1,2) -
-              G.Get(1,1)*G.Get(0,2));
-    a0.set(1, G.Get(1,0)*G.Get(0,2) -
-              G.Get(0,0)*G.Get(1,2));
-    a0.set(2, G.Get(0,0)*G.Get(1,1) -
-              G.Get(1,0)*G.Get(0,1));
+    Polynom poly = Matrix2Poly(Gamma_ij);
+    //cout << poly << endl << endl;
 
-    a1.set(0, G.Get(1,1)*G.Get(2,2) -
-              G.Get(2,1)*G.Get(1,2));
-    a1.set(1, G.Get(2,0)*G.Get(1,2) -
-              G.Get(1,0)*G.Get(2,2));
-    a1.set(2, G.Get(1,0)*G.Get(2,1) -
-              G.Get(2,0)*G.Get(1,1));
+    vector<double> root = poly.solvePolynom(); //корни куб. ур-€
+    cout << "roots of cubic equetion" << endl;
+    cout << root[0] << "; " << root[1] << "; " << root[2] << endl << endl;
 
-    a2.set(0, G.Get(0,1)*G.Get(2,2) -
-              G.Get(2,1)*G.Get(0,2));
-    a2.set(1, G.Get(2,0)*G.Get(0,2) -
-              G.Get(0,0)*G.Get(2,2));
-    a2.set(2, G.Get(0,0)*G.Get(2,1) -
-              G.Get(2,0)*G.Get(0,1));
+    vector<Matrix> G_root = eval(Gamma_ij, root);
+    cout << "Matrices for each root" << endl;
+    G_root[0].print();
+    G_root[1].print();
+    G_root[2].print();
 
-    double norm[3] = {a0.abs(), a1.abs(), a2.abs()};
-    double max_norm = norm[0];
-    double n = 0;
-    for(int i=1; i<=2; ++i) {
-        if(max_norm < norm[i]) {
-            max_norm = norm[i];
-            n += 1;
-        }
+    vector<Vec3> polariz = CalcPol(G_root); //пол€ризаци€
+    cout << "Polarisations for each root" << endl;
+    cout << polariz[0] << endl;
+    cout << polariz[1] << endl;
+    cout << polariz[2] << endl;
+
+    vector<SolPart> s(3);
+    for(int i = 0; i < 3; ++i) {
+        s[i] = SolPart(root[i], polariz[i]);
     }
 
-    if(n==0) return a0.normalized();
-    if(n==1) return a1.normalized();
-    if(n==2) return a2.normalized();
+    return s;
 }

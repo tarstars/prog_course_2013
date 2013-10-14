@@ -1,11 +1,11 @@
 #include<iostream>
-#include"polynom.h"
 #include<cmath>
+#include"polynom.h"
 
 using namespace std;
 
 double
-Polynom::at(int n) const {
+Polynom::get(int n) const {
     if(n==0) return z;
     else if(n==1) return y;
     else if(n==2) return x;
@@ -13,14 +13,21 @@ Polynom::at(int n) const {
     else return 0;
 }
 
-ostream& operator<<(ostream& os,const Polynom& Pol){
+void
+Polynom::set(double ww,double xx, double yy, double zz) {
+    w = ww;
+    x = xx;
+    y = yy;
+    z = zz;
+}
+
+ostream& operator<<(ostream& os,const Polynom& Pol) {
     return os << Pol.w << " " << Pol.x << " " << Pol.y << " " << Pol.z;
 }
 
-double*  
+vector<double>
 Polynom::solvePolynom() { // Solve cubic equation in case of real roots;
-    double *root;
-    root = new double[3];
+    vector<double> root(3);
     double Q, R;
     double a, b, c;
     double pi = 3.141592653589793;
