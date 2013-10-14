@@ -5,6 +5,7 @@
 #include "util.h"
 #include "polynom.h"
 #include "matrix.h"
+#include "solpart.h"
 
 class TestUtil: public QObject
 {
@@ -18,6 +19,7 @@ class TestUtil: public QObject
   void testCalcPol02();
   void testCalcPol03();
   void testCalcPol04();
+  void testsolveChris();
 };
 
 void TestUtil::testMakeTetragonalTensor()
@@ -195,6 +197,14 @@ TestUtil::testCalcPol04() {
   
 }
 
+void TestUtil::testsolveChris(){
+  Matrix mat = fillMatrix(
+			  4, 6, 5, 
+			  8, 8, 11, 
+			  8, 12, 10);
+  vector<SolPart> a;
+  a = solveChristoffel(mat);
+}
 
 QTEST_MAIN(TestUtil)
 #include "testutil.moc"
