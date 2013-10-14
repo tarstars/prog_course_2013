@@ -5,6 +5,7 @@
 #include "util.h"
 #include "polynom.h"
 #include "matrix.h"
+#include "solpart.h"
 
 class TestUtil: public QObject
 {
@@ -13,6 +14,12 @@ class TestUtil: public QObject
   void testMakeTetragonalTensor();
   void testChristoffel();
   void testMatrixToPoly();
+  void testCalcPol00();
+  void testCalcPol01();
+  void testCalcPol02();
+  void testCalcPol03();
+  void testCalcPol04();
+  void testsolveChris();
 };
 
 void TestUtil::testMakeTetragonalTensor()
@@ -68,6 +75,135 @@ TestUtil::testMatrixToPoly(){
 
   
   QVERIFY(Pol.get(0) == 1);
+}
+
+Matrix fillMatrix(double a11, double a12, double a13,
+		  double a21, double a22, double a23,
+		  double a31, double a32, double a33
+		  ) {
+  Matrix mat(3,3);
+
+  mat.Set(0, 0, a11); 
+  mat.Set(0, 1, a12); 
+  mat.Set(0, 2, a13); 
+
+  mat.Set(1, 0, a21); 
+  mat.Set(1, 1, a22); 
+  mat.Set(1, 2, a23); 
+
+  mat.Set(2, 0, a31); 
+  mat.Set(2, 1, a32); 
+  mat.Set(2, 2, a33); 
+
+  return mat;
+}
+
+void
+TestUtil::testCalcPol00() {
+  Matrix mat = fillMatrix(
+			  4, 6, 5, 
+			  8, 8, 11, 
+			  2, 1, 3);
+
+
+  QVERIFY(mat.det() == 0);
+
+  Vec3 a = CalcPol(mat);
+  Vec3 res(13, -2, -8);
+  res.normalize();
+
+  for(int p = 0; p < 3; p++) {
+    QVERIFY(a.at(p) == res.at(p));
+  }
+  
+}
+
+void
+TestUtil::testCalcPol01() {
+  Matrix mat = fillMatrix(
+			  4, 6, 5, 
+			  8, 12, 10, 
+			  2, 1, 3);
+
+
+  QVERIFY(mat.det() == 0);
+
+  Vec3 a = CalcPol(mat);
+  Vec3 res(13, -2, -8);
+  res.normalize();
+
+  for(int p = 0; p < 3; p++) {
+    QVERIFY(a.at(p) == res.at(p));
+  }
+  
+}
+
+void
+TestUtil::testCalcPol02() {
+  Matrix mat = fillMatrix(
+			  4, 6, 5, 
+			  8, 8, 11, 
+			  8, 12, 10);
+
+
+  QVERIFY(mat.det() == 0);
+
+  Vec3 a = CalcPol(mat);
+  Vec3 res(13, -2, -8);
+  res.normalize();
+
+  for(int p = 0; p < 3; p++) {
+    QVERIFY(a.at(p) == res.at(p));
+  }
+}
+
+void
+TestUtil::testCalcPol03() {
+  Matrix mat = fillMatrix(
+			  1, 6, 5, 
+			  8, 12, 10, 
+			  4, 6, 5);
+
+
+  QVERIFY(mat.det() == 0);
+
+  Vec3 a = CalcPol(mat);
+  Vec3 res(13, -2, -8);
+  res.normalize();
+
+  for(int p = 0; p < 3; p++) {
+    QVERIFY(a.at(p) == res.at(p));
+  }
+  
+}
+
+void
+TestUtil::testCalcPol04() {
+  Matrix mat = fillMatrix(
+			  0, 0, 0, 
+			  8, 8, 11, 
+			  4, 6, 5);
+
+
+  QVERIFY(mat.det() == 0);
+
+  Vec3 a = CalcPol(mat);
+  Vec3 res(13, -2, -8);
+  res.normalize();
+
+  for(int p = 0; p < 3; p++) {
+    QVERIFY(a.at(p) == res.at(p));
+  }
+  
+}
+
+void TestUtil::testsolveChris(){
+  Matrix mat = fillMatrix(
+			  4, 6, 5, 
+			  8, 8, 11, 
+			  8, 12, 10);
+  vector<SolPart> a;
+  a = solveChristoffel(mat);
 }
 
 QTEST_MAIN(TestUtil)

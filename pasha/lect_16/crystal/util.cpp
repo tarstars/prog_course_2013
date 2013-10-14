@@ -1,77 +1,148 @@
-#include "Vec3.h"
-#include "Tensor4.h"
-#include "Mat3.h"
+#include "matrix.h"
 #include "util.h"
+#include "Tensor4.h"
+#include "vec3.h"
+#include "polynom.h"
+#include "SolPart.h"
+//__________________________________________________________________
 
-#include <cmath>
-
-Vec3 makeVec3_norm(double x, double y, double z) {
-    Vec3 new_vec3;
-    double norm = sqrt(x*x + y*y + z*z);
-    *new_vec3.set(0) = x/norm;
-    *new_vec3.set(1) = y/norm;
-    *new_vec3.set(2) = z/norm;
-    return new_vec3;
-}
-
-//________________________________________________________
-
-Tensor4 makeTensor4(double c11, double c12, double c13,
-                    double c33, double c44, double c66) {
+Tensor4 makeTetragonalTensor(double c11, double c12, double c13,
+                             double c33, double c44, double c66) {
     Tensor4 new_tens;
 
-    double tens2[36];
-    tens2[0] = c11;  tens2[1] = c12;  tens2[2] = c13;
-    tens2[6] = c12;  tens2[7] = c11;  tens2[8] = c13;
-    tens2[12] = c13; tens2[13] = c13; tens2[14] = c33;
-    tens2[21] = c44; tens2[28] = c44; tens2[35] = c66;
+    double tens2[6][6] = {
+        {c11, c12, c13,   0,   0,   0},
+        {c12, c11, c13,   0,   0,   0},
+        {c13, c13, c33,   0,   0,   0},
+        {  0,   0,   0, c44,   0,   0},
+        {  0,   0,   0,   0, c44,   0},
+        {  0,   0,   0,   0,   0, c66}};
 
-    int a=0, b;
-    int i, j, k, l;
-    for(int n=0; n<36; ++n) {
+    double mat[3][3] = {
+        {1, 6, 5},
+        {6, 2, 4},
+        {5, 4, 3}};
 
-        if((n%6 == 0) && n!=0) a+=1;
-        b = n - 6*a;
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            for(int k=0; k<3; ++k) {
+                for(int l=0; l<3; ++l) {
+                    int a = mat[i][j];
+                    int b = mat[k][l];
+                    double v = tens2[a-1][b-1];
+                    new_tens.set(i,j,k,l,v);
+                }
+            }
 
-        if(a==0 || a==1 || a==2) i=a, j=a;
-        if(a==3) i=1, j=2;
-        if(a==4) i=0, j=2;
-        if(a==5) i=0, j=1;
-
-        if(b==0 || b==1 || b==2) k=b, l=b;
-        if(b==3) k=1, l=2;
-        if(b==4) k=0, l=2;
-        if(b==5) k=0, l=1;
-
-        *new_tens.set(i,j,k,l) =
-                *new_tens.set(j,i,k,l) = *new_tens.set(i,j,l,k) =
-                *new_tens.set(j,i,l,k) = *new_tens.set(k,l,i,j) =
-                *new_tens.set(l,k,i,j) = *new_tens.set(l,k,j,i) =
-                *new_tens.set(k,l,j,i) = tens2[b+6*a];
+        }
     }
     return new_tens;
 }
+//__________________________________________________________________
 
-//_________________________________________________________________
+Matrix christoffel(const Tensor4& tens4, const Vec3& n) {
 
-Mat3 christoffel(Tensor4 tens4, Vec3 n) {
-    Mat3 new_matrix;
+    Matrix new_matrix(3,3);
+  
     //\Gamma_il= c_ijkl * n_j * n_k;
     for(int i=0; i<3; ++i) {
         for(int l=0; l<3; ++l) {
+            double val = 0;
             for(int j=0; j<3; ++j) {
                 for(int k=0; k<3; ++k) {
-                    *new_matrix.set(i,l) +=
-                            tens4.at(i,j,k,l) * n.at(j) * n.at(k);
+                    val += tens4.at(i,j,k,l) * n.at(j) * n.at(k);
                 }
             }
+            new_matrix.Set(i, l, val);
         }
     }
+  
     return new_matrix;
 }
+//__________________________________________________________________
 
+Polynom Matrix2Poly(const Matrix& mat) {
+    Matrix mat2 = mat*mat;
+    Polynom Pol(1,2,3,4);
+    double a1,a2,a3,a4; // polynomial coefficents at x^3, x^2, x^1, x^0;
+
+    a1 = -1;
+    a2 = 1*mat.trace();
+    a3 = 0.5*mat2.trace() - 0.5*mat.trace()*mat.trace();
+    a4 = 1*mat.det();
+    Pol.set(a1,a2,a3,a4);
+
+    return Pol;
+}
+//________________________________________________________________
+
+vector<Matrix> eval(const Matrix& M, const vector<double>& root) {
+    vector<Matrix> new_M(3,M);
+    double val;
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            val = M.Get(j,j) - root[i];
+            new_M[i].Set(j,j,val);
+        }
+    }
+    return new_M;
+}
+//________________________________________________________________
+
+vector<Vec3> CalcPol(const vector<Matrix>& G) {
+    vector<Vec3> a0(3), a1(3), a2(3), a(3);
+    vector<Vec3> v0(3), v1(3), v2(3);
+
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            a0[i].set(j, G[i].Get(0,j));
+            a1[i].set(j, G[i].Get(1,j));
+            a2[i].set(j, G[i].Get(2,j));
+        }
+        v0[i] = a0[i] * a1[i];
+        v1[i] = a0[i] * a2[i];
+        v2[i] = a1[i] * a2[i];
+        if((v0[i].abs() >= v1[i].abs()) &&
+           (v0[i].abs() >= v2[i].abs()))
+                a[i] = v0[i].normalized();
+        else if((v1[i].abs() >= v0[i].abs()) &&
+                (v1[i].abs() >= v2[i].abs()))
+                a[i] = v1[i].normalized();
+        else
+                a[i] = v2[i].normalized();
+    }
+    return a;
+}
 //_________________________________________________________________
 
-/*vector<SolPart> solveChristoffel(Mat3 chrMat) {
+vector<SolPart> solveChristoffel(const Tensor4& c_ij, const Vec3& n) {
+    Matrix Gamma_ij = christoffel(c_ij, n);
+    cout << "christoffel(c_ij, n)" << endl;
+    Gamma_ij.print();
 
-}*/
+    Polynom poly = Matrix2Poly(Gamma_ij);
+    //cout << poly << endl << endl;
+
+    vector<double> root = poly.solvePolynom(); //корни куб. ур-€
+    cout << "roots of cubic equetion" << endl;
+    cout << root[0] << "; " << root[1] << "; " << root[2] << endl << endl;
+
+    vector<Matrix> G_root = eval(Gamma_ij, root);
+    cout << "Matrices for each root" << endl;
+    G_root[0].print();
+    G_root[1].print();
+    G_root[2].print();
+
+    vector<Vec3> polariz = CalcPol(G_root); //пол€ризаци€
+    cout << "Polarisations for each root" << endl;
+    cout << polariz[0] << endl;
+    cout << polariz[1] << endl;
+    cout << polariz[2] << endl;
+
+    vector<SolPart> s(3);
+    for(int i = 0; i < 3; ++i) {
+        s[i] = SolPart(root[i], polariz[i]);
+    }
+
+    return s;
+}

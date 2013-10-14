@@ -51,7 +51,7 @@ void Polynom::set(double ww,double xx, double yy, double zz){
 
 }
 
-double Polynom::get(int n)
+double Polynom::get(int n) const
 {
   double ret=0;
 

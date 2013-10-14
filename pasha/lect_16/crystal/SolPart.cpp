@@ -1,19 +1,8 @@
 #include "SolPart.h"
-#include <cmath>
+#include <iostream>
 
-SolPart::
-~SolPart() {
-    delete []sol;
-}
+using namespace std;
 
-SolPart::SolPart(): sol(new double[2]()) {}
-
-double
-SolPart::at(int i) const{
-    return sol[i];
-}
-
-double*
-SolPart::set(int i) {
-    return sol + i;
+ostream& operator<<(ostream& os,const SolPart& sol) {
+    return os << sol.v << endl << sol.q;
 }
