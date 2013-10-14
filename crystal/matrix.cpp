@@ -80,10 +80,23 @@ double Matrix::trace() const{
   return ret;
 }
 
-Matrix Matrix::operator*(const Matrix& mat) const{
-  return mat;
+Matrix Matrix::operator*(const Matrix& b) const{
+  Matrix c(lines, b.columns); 
+for(int i = 0; i < lines; ++i){
+    for (int j = 0; j < columns; ++j){
+      c[i][j] = 0;
+      for (int k = 0; k < lines; ++k){
+	c[i][j] += matr[i][k]*b[k][j];
+	}
+    }
+  }
+  return c;
 }
 
-double Matrix::det() const{
-  return 0;
+double Matrix::det() const{ 
+double det = 0;
+  det =  matr[0][0]*(matr[1][1]*matr[2][2]- matr[1][2]*matr[2][1])- matr[0][1]*(matr[1][0]*matr[2][2]- matr[2][0]*matr[1][2])+ matr[0][2]*(matr[1][0]*matr[2][1]- matr[2][0]*matr[1][1]);
+  
+return det;
 }
+

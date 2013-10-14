@@ -118,3 +118,12 @@ Vec3 CalcPol(const Matrix& G) {
     if(n==1) return a1.normalized();
     return a2.normalized();
 }
+
+Matrix eval(const Matrix& a, double gamma){
+  Matrix b(3,3);
+  b = a;
+  for(int i = 0; i < 3; ++i){
+    b[i][i] = a[i][i] - gamma; 
+  }
+  return b;
+}
