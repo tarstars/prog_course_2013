@@ -149,3 +149,61 @@ vector<SolPart> solveChristoffel(const Matrix& chrMat, double rho){
     }
   return ret;
 }
+
+Matrix Rot_x(double a)
+{
+  Matrix dat(3,3);
+  
+  dat.Set(0, 0, 1);
+  dat.Set(0, 1, 0);
+  dat.Set(0, 2, 0);
+
+  dat.Set(1, 0, 0);
+  dat.Set(1, 1, cos(a));
+  dat.Set(1, 2, sin(a));
+
+  dat.Set(2, 0, 0);
+  dat.Set(2, 1, -sin(a));
+  dat.Set(2, 2, cos(a));
+
+return dat;
+}
+
+Matrix Rot_y(double a)
+{
+  Matrix dat(3,3);
+  
+  dat.Set(0, 0, cos(a));
+  dat.Set(0, 1, 0);
+  dat.Set(0, 2, -sin(a));
+
+  dat.Set(1, 0, 0);
+  dat.Set(1, 1, 1);
+  dat.Set(1, 2, 0);
+
+  dat.Set(2, 0, sin(a));
+  dat.Set(2, 1, 0);
+  dat.Set(2, 2, cos(a));
+
+return dat;
+}
+
+
+Matrix Rot_z(double a)
+{
+  Matrix dat(3,3);
+  
+  dat.Set(0, 0, cos(a));
+  dat.Set(0, 1, sin(a));
+  dat.Set(0, 2, 0);
+
+  dat.Set(1, 0, -sin(a));
+  dat.Set(1, 1, cos(a));
+  dat.Set(1, 2, 0);
+
+  dat.Set(2, 0, 0);
+  dat.Set(2, 1, 0);
+  dat.Set(2, 2, 1);
+
+return dat;
+}
