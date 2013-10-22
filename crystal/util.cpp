@@ -150,7 +150,7 @@ vector<SolPart> solveChristoffel(const Matrix& chrMat, double rho){
   return ret;
 }
 
-Matrix Rot_x(double a)
+Matrix rotX(double a)
 {
   Matrix dat(3,3);
   
@@ -169,7 +169,7 @@ Matrix Rot_x(double a)
 return dat;
 }
 
-Matrix Rot_y(double a)
+Matrix rotY(double a)
 {
   Matrix dat(3,3);
   
@@ -189,7 +189,7 @@ return dat;
 }
 
 
-Matrix Rot_z(double a)
+Matrix rotZ(double a)
 {
   Matrix dat(3,3);
   

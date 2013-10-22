@@ -17,3 +17,7 @@ Polynom MatrixToPoly(const Matrix&);
 Vec3 CalcPol(const Matrix& G);
 
 vector<SolPart> solveChristoffel(const Matrix& chrMat, double rho);
+
+Matrix rotX(double a);
+Matrix rotY(double a);
+Matrix rotZ(double a);

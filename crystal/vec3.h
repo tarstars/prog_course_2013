@@ -14,6 +14,12 @@ public:
 	void set(int, double);
 	double at(int) const;
 	double abs() const;
+	Vec3 operator*(double r) const {
+	  return Vec3(dat[0] * r, 
+		      dat[1] * r, 
+		      dat[2] * r);
+	}
+
 	Vec3 normalized() const;
 	void normalize();
 

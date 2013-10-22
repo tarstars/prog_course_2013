@@ -35,12 +35,5 @@ light_source {
 
 #include "coordinate_system.inc"
 
-intersection {
-  union {
-    #include "3d_index.inc"
-  }
-  plane {
-    <1, 1, 2>,
-    1.0
-  }
-}
+#include "xy_plane.pov"
+
