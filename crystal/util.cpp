@@ -4,8 +4,12 @@
 #include "vec3.h"
 #include "polynom.h"
 #include "solpart.h"
+
+#include <cmath>
 #include <vector>
+
 using namespace std;
+
 Tensor4 makeTetragonalTensor(double c11, double c12, double c13, double c33, double c44, double c66) {
     Tensor4 new_tens;
 
@@ -130,7 +134,7 @@ Matrix eval(const Matrix& a, double gamma){
   return b;
 }
 
-vector<SolPart> solveChristoffel(const Matrix& chrMat){
+vector<SolPart> solveChristoffel(const Matrix& chrMat, double rho){
   vector<SolPart> ret(3);
   vector<double> roots;
   Matrix Eigen(3,3);  
@@ -138,10 +142,10 @@ vector<SolPart> solveChristoffel(const Matrix& chrMat){
   Vec3 polvector;
   Pol = MatrixToPoly(chrMat);
   roots = Pol.solvePolynom();
-  for(int i=0;i<2;++i){
+  for(int i=0;i<3;++i){
     Eigen = eval(chrMat,roots[i]);
     polvector = CalcPol(Eigen);
-    ret[i].Put(roots[i], polvector);
+    ret[i].Put(sqrt(roots[i]/rho), polvector);
     }
   return ret;
 }

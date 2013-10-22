@@ -16,4 +16,4 @@ Polynom MatrixToPoly(const Matrix&);
 
 Vec3 CalcPol(const Matrix& G);
 
-vector<SolPart> solveChristoffel(const Matrix& chrMat);
+vector<SolPart> solveChristoffel(const Matrix& chrMat, double rho);

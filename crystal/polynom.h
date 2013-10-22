@@ -10,5 +10,5 @@ class Polynom{
   void set(double ww,double xx, double yy, double zz);
   std::vector<double> solvePolynom();// solve cubic equation if all roots are real;
 
-  double get(int n); 
+  double get(int n) const; 
 };

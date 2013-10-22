@@ -11,4 +11,6 @@ public:
     v = vv;
     q = qq;
   }
+
+  friend std::ostream& operator<<(std::ostream&, const SolPart& r);
 };

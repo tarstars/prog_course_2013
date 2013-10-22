@@ -15,11 +15,11 @@ void TestMatrix::setGet()
   
   dat.Set(0, 0, 5);
   dat.Set(1, 0, 15);
-  dat.Set(2, 2, 25);
+  dat.Set(2, 2, 25.5);
 
   QVERIFY(dat.Get(0, 0) == 5);
   QVERIFY(dat.Get(1, 0) == 15);
-  QVERIFY(dat.Get(2, 2) == 25);
+  QVERIFY(dat.Get(2, 2) == 25.5);
 }
 
 void TestMatrix::testTrace() {

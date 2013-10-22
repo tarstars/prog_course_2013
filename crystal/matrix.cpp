@@ -6,9 +6,9 @@ using namespace std;
 Matrix::Matrix(int a, int b){
   lines = a;
   columns = b;
-  matr = new int *[lines];
+  matr = new double *[lines];
   for(int i = 0; i < lines; ++i){
-    matr[i] = new int [columns];
+    matr[i] = new double [columns];
   }
   
   for(int p = 0; p < lines; p++) {
@@ -49,9 +49,9 @@ void Matrix::print() const {
 Matrix::Matrix(const Matrix &r){
   columns = r.columns;
   lines = r.lines;
-  matr = new int *[lines];
+  matr = new double *[lines];
   for(int i = 0; i < lines; ++i){
-    matr[i] = new int [columns];
+    matr[i] = new double [columns];
     for(int j = 0; j < columns; ++j){
       matr[i][j]= r.matr[i][j];
     }
@@ -82,12 +82,12 @@ double Matrix::trace() const{
 
 Matrix Matrix::operator*(const Matrix& b) const{
   Matrix c(lines, b.columns); 
-for(int i = 0; i < lines; ++i){
+  for(int i = 0; i < lines; ++i){
     for (int j = 0; j < columns; ++j){
       c[i][j] = 0;
       for (int k = 0; k < lines; ++k){
 	c[i][j] += matr[i][k]*b[k][j];
-	}
+      }
     }
   }
   return c;
@@ -100,3 +100,16 @@ double det = 0;
 return det;
 }
 
+Matrix& 
+Matrix::operator=(const Matrix& r) {
+  if (this == &r) {
+    return *this;
+  }
+
+  Matrix tmp(r);
+  swap(tmp.matr, matr);
+  swap(tmp.lines, lines);
+  swap(tmp.columns, columns);
+
+  return *this;
+}
