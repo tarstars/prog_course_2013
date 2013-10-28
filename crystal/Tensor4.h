@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include "matrix.h"
 class Tensor4 {
 	std::vector<double> v;
 	void checkRE(int i, int j, int k, int l) const {
@@ -16,7 +16,7 @@ public:
 	class RangeErr {};
 
        	Tensor4() : v(81) {}
-	
+	void tensorRot(const Matrix& m);
 	void set(int i, int j, int k, int l, double x) {
 		checkRE(i, j, k, l);
 		v[27*i + 9*j + 3*k + l] = x;
