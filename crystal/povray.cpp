@@ -7,49 +7,85 @@
 #include <fstream>
 
 #include <math.h>
+#include <string.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
+#include "povray_templates.h"
+
 using namespace std;
+
+
+/*
+ * POVray coordinates: (y,z,-x)
+ */
+
+ostream& outputCoords(ostream& os, double x, double y, double z)
+{
+    return os<<"<"<<y<<","<<z<<","<<-1*x<<">";
+}
+
+ostream& outputCoords(ostream& os, const Vec3& vec)
+{
+    return os<<"<"<<vec.at(1)<<","<<vec.at(2)<<","<<(-1*vec.at(0))<<">";
+}
+
+ostream& outputSphere(ostream& os, const Vec3& vec)
+{
+    os<<"sphere {\n    ";
+    outputCoords(os,vec);
+    os<<", 0.1\npigment { rgb<0.9,0.1,0.1> }\n"
+             "    finish {\n        ambient .2\n        diffuse .6\n        specular .75\n"
+             "        roughness .001\n    }\n}\n\n";
+    return os;
+}
+
+void test_cut(ostream& os, const Vec3& vec)
+{
+    Vec3 n = vec.normalized();
+    Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
+    double rho = 5.96e3;
+    Matrix chrMat = christoffel(tens, n);
+    vector<SolPart> sols = solveChristoffel(chrMat,rho);
+
+    for(int l=0;l<sols.size();++l)
+    {
+        Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
+                   2000*n.at(1)/sols.at(l).getV(),
+                   2000*n.at(2)/sols.at(l).getV());
+
+        outputSphere(os,speed);
+    }
+}
+
+void test_cuts(const char* filebase)
+{
+    char fname[256];
+    memset(fname,0,sizeof(fname));
+    strcat(fname,filebase);
+    strcat(fname,".pov");
+    ofstream povfile;
+    povfile.open(fname,ofstream::out);
+    povfile<<povray_templates::header;
+    povfile<<povray_templates::coords;
+
+    test_cut(povfile,Vec3(0,0,1));
+    test_cut(povfile,Vec3(0,0,-1));
+    test_cut(povfile,Vec3(0,1,0));
+    test_cut(povfile,Vec3(0,-1,0));
+    test_cut(povfile,Vec3(1,1,0));
+    test_cut(povfile,Vec3(-1,-1,0));
+
+    povfile.close();
+
+    povray_templates::make_base(filebase,100,1);
+}
 
 int main()
 {
-  Vec3 n;
-  Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
-  double rho = 5.96e3;
-  vector<SolPart> sols;
 
-  ofstream povfile;
-  povfile.open("crystal.pov",ofstream::out);
-  povfile<<"#version 3.7;\n\nglobal_settings {assumed_gamma 1.0}\n\n";
-  povfile<<"camera {\n    location <10,15,10>\n    look_at <0,0,0>\n    angle 30\n}\n\n";
-  povfile<<"light_source {\n    <-10,10,10>\n    color <1, 1, 1>\n}\n\n";
-
-  double r,x,y;
-  for(double z = -1;z<=1;z+=0.02)
-  {
-    for(int k=0;k<360;++k)
-    {
-        r = sqrt(1-z*z);
-        x = r*cos(2*M_PI*k/360.);
-        y = r*sin(2*M_PI*k/360.);
-        n = Vec3(x,y,z).normalized();
-        Matrix chrMat = christoffel(tens, n);
-        sols = solveChristoffel(chrMat,rho);
-        for(int l=0;l<sols.size();++l)
-        {
-            povfile<<"sphere {\n    <"<<sols.at(l).getVec().at(1)<<
-                     ","<<sols.at(l).getVec().at(2)<<
-                     ","<<-1*sols.at(l).getVec().at(0)<<">, 1\n"
-                     "pigment { rgb<0.5,0.5,0.5> }\n"
-                     "    finish {\n        ambient .2\n        diffuse .6\n        specular .75\n"
-                     "        roughness .001\n    }\n}\n\n";
-        }
-    }
-  }
-
-  povfile.close();
-  return 0;
+    test_cuts("povray");
+    return 0;
 }
