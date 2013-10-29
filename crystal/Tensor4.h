@@ -17,6 +17,7 @@ public:
 
        	Tensor4() : v(81) {}
 	void tensorRot(const Matrix& m);
+
 	void set(int i, int j, int k, int l, double x) {
 		checkRE(i, j, k, l);
 		v[27*i + 9*j + 3*k + l] = x;
