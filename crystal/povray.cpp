@@ -36,7 +36,7 @@ ostream& outputSphere(ostream& os, const Vec3& vec)
 {
     os<<"sphere {\n    ";
     outputCoords(os,vec);
-    os<<", 0.1\npigment { rgb<0.9,0.1,0.1> }\n"
+    os<<", 0.05\npigment { rgb<0.9,0.1,0.1> }\n"
              "    finish {\n        ambient .2\n        diffuse .6\n        specular .75\n"
              "        roughness .001\n    }\n}\n\n";
     return os;
@@ -44,13 +44,13 @@ ostream& outputSphere(ostream& os, const Vec3& vec)
 
 void test_cut(ostream& os, const Vec3& vec)
 {
-    Vec3 n = vec.normalized();
+  Vec3 n = vec.normalized();
     Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
     double rho = 5.96e3;
     Matrix chrMat = christoffel(tens, n);
     vector<SolPart> sols = solveChristoffel(chrMat,rho);
 
-    for(int l=0;l<sols.size();++l)
+    for(size_t l=0;l<sols.size();++l)
     {
         Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
                    2000*n.at(1)/sols.at(l).getV(),
@@ -83,9 +83,41 @@ void test_cuts(const char* filebase)
     povray_templates::make_base(filebase,100,1);
 }
 
+void test_rotation(const char* filebase)
+{
+    char fname[256];
+    memset(fname,0,sizeof(fname));
+    strcat(fname,filebase);
+    strcat(fname,".pov");
+    ofstream povfile;
+    povfile.open(fname,ofstream::out);
+    povfile<<povray_templates::header;
+    povfile<<povray_templates::coords;
+
+    int n = 100;
+    for(int p = 0; p < n; ++p) {
+      double z = -1 + 2. * p / n;
+      for(int q = 0; q < n; ++q) {
+	double phi = 2 * M_PI * q / n;
+	double r = sqrt(1 - z*z);
+	Vec3 v(r*cos(phi), r*sin(phi),z);
+	try {
+	  test_cut(povfile, v);
+	} catch(string msg) {
+	  cerr << "problem: " << msg << " p = " << p << " q = " << q << endl;
+	}
+      }
+    }
+
+    povfile.close();
+}
+
 int main()
 {
-
-    test_cuts("povray");
+  try {
+    test_rotation("povray");
+  } catch(string msg) {
+    cerr << "error: " << msg << endl;
+  }
     return 0;
 }
