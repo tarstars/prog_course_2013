@@ -36,7 +36,7 @@ ostream& outputSphere(ostream& os, const Vec3& vec)
 {
     os<<"sphere {\n    ";
     outputCoords(os,vec);
-    os<<", 0.1\npigment { rgb<0.9,0.1,0.1> }\n"
+    os<<", 0.04\npigment { rgb<0.9,0.1,0.1> }\n"
              "    finish {\n        ambient .2\n        diffuse .6\n        specular .75\n"
              "        roughness .001\n    }\n}\n\n";
     return os;
@@ -71,12 +71,18 @@ void test_cuts(const char* filebase)
     povfile<<povray_templates::header;
     povfile<<povray_templates::coords;
 
-    test_cut(povfile,Vec3(0,0,1));
+    /*test_cut(povfile,Vec3(0,0,1));
     test_cut(povfile,Vec3(0,0,-1));
     test_cut(povfile,Vec3(0,1,0));
     test_cut(povfile,Vec3(0,-1,0));
     test_cut(povfile,Vec3(1,1,0));
-    test_cut(povfile,Vec3(-1,-1,0));
+    test_cut(povfile,Vec3(-1,-1,0));*/
+
+    for(int i=0;i<720;++i)
+    {
+        test_cut(povfile,Vec3(cos(2*M_PI*i/360),sin(2*M_PI*i/360),0));
+        test_cut(povfile,Vec3(0,cos(2*M_PI*i/360),sin(2*M_PI*i/360)));
+    }
 
     povfile.close();
 
