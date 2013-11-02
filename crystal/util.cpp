@@ -209,6 +209,13 @@ Matrix rotZ(double a)
 return dat;
 }
 
+int compareSolPart(const void *a, const void *b)
+{
+    SolPart* asp = (SolPart*)a;
+    SolPart* bsp = (SolPart*)b;
+    return (asp->getV() > bsp->getV()) ? 1 : ((asp->getV() < bsp->getV()) ? -1 : 0);
+}
+
 
 // POVray stuff
 #include <fstream>

@@ -3,6 +3,8 @@ TARGET = povraygen
 DEPENDPATH += .
 INCLUDEPATH += .
 
+QMAKE_CXXFLAGS += -std=c++11
+
 # Input
 HEADERS += matrix.h polynom.h solpart.h Tensor4.h util.h vec3.h \
     povray_templates.h

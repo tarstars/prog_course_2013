@@ -22,6 +22,8 @@ Matrix rotX(double a);
 Matrix rotY(double a);
 Matrix rotZ(double a);
 
+int compareSolPart(const void * a, const void * b);
+
 //povray stuff
 #include <ostream>
 #include <string>

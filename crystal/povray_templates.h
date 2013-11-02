@@ -9,6 +9,30 @@
 namespace povray_templates
 {
 
+static const char statheader[] =
+        "#version 3.7;\n"
+        "global_settings {assumed_gamma 1.0}\n"
+        "#declare viewAngle = 3*pi/8;\n"
+        "#declare cameraDist = 10;\n"
+        "#declare customColor = <1, 1, 0>;\n"
+        "#declare csSize = 1;\n\n"
+        "camera{\n"
+        "location < cos(viewAngle) * cameraDist, 2.5, sin(viewAngle) * cameraDist >\n"
+        "angle 50\nlook_at  <0, 1, 0>\n"
+        "}\n\n"
+        "plane{\n"
+        "y, -3\n"
+        "pigment{color<1, 1, 1>}\n"
+        "}\n\n"
+        "light_source {\n"
+        "<cos(viewAngle - pi / 4) * cameraDist, 10, sin(viewAngle - pi / 4) * cameraDist>\n"
+        "color<1, 1, 1>\n"
+        "}\n\n"
+        /*"light_source {\n"
+        "<cos(viewAngle + pi / 4) * cameraDist, 10, sin(viewAngle + pi / 4) * cameraDist>\n"
+        "color<1, 1, 1>\n"
+        "}\n\n"*/;
+
 static const char header[] =
         "#version 3.7;\n"
         "global_settings {assumed_gamma 1.0}\n"
