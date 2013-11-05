@@ -3,6 +3,8 @@
 
 using namespace std;
 
+class Vec3;
+
 class Matrix{
  private:
   int columns;
@@ -18,6 +20,7 @@ class Matrix{
   double Get(int a, int b) const;
   double trace() const;
   Matrix operator*(const Matrix&) const;
+  Vec3 operator*(const Vec3&) const;
   Matrix& operator=(const Matrix&);
   double* operator[](int ind) {return matr[ind];}
   const double* operator[](int ind) const {return matr[ind];}

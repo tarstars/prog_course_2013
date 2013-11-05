@@ -1,5 +1,7 @@
-#include<iostream>
-#include"matrix.h"
+#include "matrix.h"
+#include "vec3.h" 
+
+#include <iostream>
 
 using namespace std;
 
@@ -112,4 +114,11 @@ Matrix::operator=(const Matrix& r) {
   swap(tmp.columns, columns);
 
   return *this;
+}
+
+Vec3 
+Matrix::operator*(const Vec3& v) const {
+  return Vec3(matr[0][0]*v.at(0)+matr[0][1]*v.at(1)+matr[0][2]*v.at(2),
+              matr[1][0]*v.at(0)+matr[1][1]*v.at(1)+matr[1][2]*v.at(2),
+              matr[2][0]*v.at(0)+matr[2][1]*v.at(1)+matr[2][2]*v.at(2));
 }
