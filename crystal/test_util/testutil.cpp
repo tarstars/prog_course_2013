@@ -20,6 +20,7 @@ class TestUtil: public QObject
   void testCalcPol03();
   void testCalcPol04();
   void testsolveChris();
+  void testPovrayColor();
 };
 
 void TestUtil::testMakeTetragonalTensor()
@@ -203,7 +204,30 @@ void TestUtil::testsolveChris(){
 			  8, 8, 11, 
 			  8, 12, 10);
   vector<SolPart> a;
-  a = solveChristoffel(mat);
+  a = solveChristoffel(mat,6e3);
+}
+
+void TestUtil::testPovrayColor()
+{
+    PovrayColor color(2,3,4);
+    QVERIFY(color.Red() == 2);
+    QVERIFY(color.Green() == 3);
+    QVERIFY(color.Blue() == 4);
+    
+    color = PovrayColor("#0AD345");
+    QVERIFY(color.Red() == 0x0A);
+    QVERIFY(color.Green() == 0xD3);
+    QVERIFY(color.Blue() == 0x45);
+    
+    color = PovrayColor("#DF0ab4");
+    QVERIFY(color.Red() == 0xDF);
+    QVERIFY(color.Green() == 0x0A);
+    QVERIFY(color.Blue() == 0xB4);
+    
+    color = PovrayColor("#hh00dd");
+    QVERIFY(color.Red() == 255);
+    QVERIFY(color.Green() == 255);
+    QVERIFY(color.Blue() == 255);
 }
 
 QTEST_MAIN(TestUtil)
