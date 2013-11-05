@@ -21,12 +21,15 @@ ostream& operator <<(ostream& os, const Tensor4& t) {
 	}
 	return os;
 }
-void Tensor4::tensorRot(const Matrix& m){
+Tensor4
+Tensor4::tensorRot(const Matrix& m){
+  Tensor4 ret;
+
   for(int i=0;i < 3 ; ++i){
     for(int j=0;j < 3 ; ++j){
       for(int k=0;k < 3 ; ++k){
 	for(int l=0;l < 3 ; ++l){
-	  double svertka;
+	  double svertka = 0;
 	  for(int i1=0;i1 < 3 ; ++i1){
 	    for(int j1=0;j1 < 3 ; ++j1){
 	      for(int k1=0;k1 < 3 ; ++k1){
@@ -36,9 +39,10 @@ void Tensor4::tensorRot(const Matrix& m){
 	      }
 	    }
 	  }
-	  set(i,j,k,l,svertka);
+	  ret.set(i,j,k,l,svertka);
 	}  
       }
     }
   }
+  return ret;
 }

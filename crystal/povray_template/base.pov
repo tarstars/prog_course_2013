@@ -14,7 +14,7 @@ camera{
              2.5, 
              sin(viewAngle) * cameraDist >
 
-  angle 50  
+  angle 30  
   look_at  <0, 1, 0> 
 }             
 

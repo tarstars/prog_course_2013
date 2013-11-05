@@ -16,7 +16,7 @@ public:
 	class RangeErr {};
 
        	Tensor4() : v(81) {}
-	void tensorRot(const Matrix& m);
+	Tensor4 tensorRot(const Matrix& m);
 
 	void set(int i, int j, int k, int l, double x) {
 		checkRE(i, j, k, l);

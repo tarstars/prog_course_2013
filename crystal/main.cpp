@@ -20,19 +20,39 @@ static const vector<PovrayColor> cutColors = {{PovrayColor(0,0,255),
 void test_cut(ostream& os, const Vec3& vec)
 {
   Vec3 n = vec.normalized();
-    Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
-    double rho = 5.96e3;
-    Matrix chrMat = christoffel(tens, n);
-    vector<SolPart> sols = solveChristoffel(chrMat,rho);
-    qsort(&sols[0],sols.size(),sizeof(SolPart),compareSolPart);
+  Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
+  double rho = 5.96e3;
+  Matrix chrMat = christoffel(tens, n);
+  vector<SolPart> sols = solveChristoffel(chrMat,rho);
+  qsort(&sols[0],sols.size(),sizeof(SolPart),compareSolPart);
 
-    for(size_t l=0;l<sols.size();++l)
+  for(size_t l=0;l<sols.size();++l)
     {
-        Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
-                   2000*n.at(1)/sols.at(l).getV(),
-                   2000*n.at(2)/sols.at(l).getV());
+      Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
+		 2000*n.at(1)/sols.at(l).getV(),
+		 2000*n.at(2)/sols.at(l).getV());
 
-        outputPovraySphere(os,speed,cutColors.at(l));
+      outputPovraySphere(os,speed,cutColors.at(l));
+    }
+}
+
+void test_cut_external(ostream& os, 
+		       Tensor4 const& tens, 
+		       const Vec3& vec)
+{
+  Vec3 n = vec.normalized();
+  double rho = 5.96e3;
+  Matrix chrMat = christoffel(tens, n);
+  vector<SolPart> sols = solveChristoffel(chrMat,rho);
+  qsort(&sols[0],sols.size(),sizeof(SolPart),compareSolPart);
+
+  for(size_t l=0;l<sols.size();++l)
+    {
+      Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
+		 2000*n.at(1)/sols.at(l).getV(),
+		 2000*n.at(2)/sols.at(l).getV());
+
+      outputPovraySphere(os,speed,cutColors.at(l));
     }
 }
 
@@ -79,21 +99,27 @@ void test_rotation(const char* filebase)
     povfile<<povray_templates::header;
     povfile<<povray_templates::coords;
 
+    Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.4e10, 10.6e10, 2.65e10, 6.6e10);
+    Matrix rotMat = rotX(1.57);
+    cout << tens << endl << endl;    
+    Tensor4 rtens = tens.tensorRot(rotMat);
+    cout << rtens << endl;
+    
     int n = 100;
     for(int p = 0; p < n; ++p) {
       double z = -1 + 2. * p / n;
       for(int q = 0; q < n; ++q) {
-    double phi = 2 * M_PI * q / n;
-    double r = sqrt(1 - z*z);
-    Vec3 v(r*cos(phi), r*sin(phi),z);
-    try {
-      test_cut(povfile, v);
-    } catch(string msg) {
-      cerr << "problem: " << msg << " p = " << p << " q = " << q << endl;
-    }
+	double phi = 2 * M_PI * q / n;
+	double r = sqrt(1 - z*z);
+	Vec3 v(r*cos(phi), r*sin(phi), z);
+	try {
+	  test_cut_external(povfile, rtens, v);
+	} catch(string msg) {
+	  cerr << "problem: " << msg << " p = " << p << " q = " << q << endl;
+	}
       }
     }
-
+    
     povfile.close();
 }
 ///////////////////////povray test rotation/////////////////////
@@ -170,8 +196,8 @@ Matrix::operator *(const Vec3& v) const{
 int main()
 {
   try {
-    test_cuts("povray");
-    //test_cutrotation("povrayrot");
+    //test_cuts("povray");
+    test_rotation("test_rotation");
   } catch(string msg) {
     cerr << "error: " << msg << endl;
   }
@@ -197,9 +223,9 @@ int main() {
 }
 */
 
-//Паша: нарисовать поляризации
-//Андрей: фильтровать по модам
+//Паша: Брезенхейм для окружности
+//Андрей:
 //Настя: попробовать повернуть картинку
-//Дима: сделать моды разными цветами полностью отрисованные поверхности медленности шариками, сечение плоскостью. Плоскость поворачивается
+//Дима: нарисовать поляризации
 //Таня: дописать бейсик с рэгекспами, чтобы рисовал линии
 //

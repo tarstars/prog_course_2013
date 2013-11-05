@@ -1,3 +1,4 @@
+QT -= gui core
 TEMPLATE = app
 TARGET = povraygen
 DEPENDPATH += .
