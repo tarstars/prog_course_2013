@@ -72,9 +72,11 @@ std::ostream& outputPovrayCoords(std::ostream& os, double x, double y, double z)
 std::ostream& outputPovrayCoords(std::ostream& os, const Vec3& vec);
 
 std::ostream& outputPovraySphere(std::ostream& os, const Vec3& vec,
-                                 const PovrayColor& color = PovrayColor(127,127,127));
+                                 const PovrayColor& color = PovrayColor(127,127,127),
+                                 const Vec3* translate = NULL);
 std::ostream& outputPovrayCylinder(std::ostream& os, const Vec3& base,
                                    const Vec3& cap, double radius,
-                                   const PovrayColor& color = PovrayColor(127,127,127));
+                                   const PovrayColor& color = PovrayColor(127,127,127),
+                                   const Vec3* translate = NULL);
 
 

@@ -15,9 +15,17 @@ using namespace std;
 static const vector<PovrayColor> cutColors = {{PovrayColor(0,0,255),
                                                PovrayColor(0,255,0),
                                                PovrayColor(255,0,0)}};
+static const PovrayColor polColor("#C29C12");
+
+enum TestCutsMode
+{
+    TestCuts_Dot,
+    TestCuts_Pol,
+    TestCuts_DotPol
+};
 
 ///////////////////////povray test plane cut////////////////////
-void test_cut(ostream& os, const Vec3& vec)
+void test_cut(ostream& os, const Vec3& vec, TestCutsMode mode = TestCuts_Dot)
 {
   Vec3 n = vec.normalized();
   Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.2e10, 10.6e10, 2.65e10, 6.6e10);
@@ -26,19 +34,30 @@ void test_cut(ostream& os, const Vec3& vec)
   vector<SolPart> sols = solveChristoffel(chrMat,rho);
   qsort(&sols[0],sols.size(),sizeof(SolPart),compareSolPart);
 
+  Vec3 polvec, speed;
   for(size_t l=0;l<sols.size();++l)
     {
-      Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
-		 2000*n.at(1)/sols.at(l).getV(),
-		 2000*n.at(2)/sols.at(l).getV());
-
-      outputPovraySphere(os,speed,cutColors.at(l));
+      speed.set(0,2000*n.at(0)/sols.at(l).getV());
+      speed.set(1,2000*n.at(1)/sols.at(l).getV());
+      speed.set(2,2000*n.at(2)/sols.at(l).getV());
+      polvec = sols.at(l).getVec().normalized()*(1./10);
+      switch(mode)
+      {
+          case TestCuts_Dot:
+              outputPovraySphere(os,speed,cutColors.at(l));
+              break;
+          case TestCuts_DotPol:
+              outputPovraySphere(os,speed,cutColors.at(l));
+          case TestCuts_Pol:
+              outputPovrayCylinder(os,polvec*-1,polvec,0.01,polColor,&speed);
+              break;
+      }
     }
 }
 
-void test_cut_external(ostream& os, 
-		       Tensor4 const& tens, 
-		       const Vec3& vec)
+void test_cut_external(ostream& os,
+               Tensor4 const& tens,
+               const Vec3& vec)
 {
   Vec3 n = vec.normalized();
   double rho = 5.96e3;
@@ -49,8 +68,8 @@ void test_cut_external(ostream& os,
   for(size_t l=0;l<sols.size();++l)
     {
       Vec3 speed(2000*n.at(0)/sols.at(l).getV(),
-		 2000*n.at(1)/sols.at(l).getV(),
-		 2000*n.at(2)/sols.at(l).getV());
+         2000*n.at(1)/sols.at(l).getV(),
+         2000*n.at(2)/sols.at(l).getV());
 
       outputPovraySphere(os,speed,cutColors.at(l));
     }
@@ -101,25 +120,25 @@ void test_rotation(const char* filebase)
 
     Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.4e10, 10.6e10, 2.65e10, 6.6e10);
     Matrix rotMat = rotX(1.57);
-    cout << tens << endl << endl;    
+    cout << tens << endl << endl;
     Tensor4 rtens = tens.tensorRot(rotMat);
     cout << rtens << endl;
-    
+
     int n = 100;
     for(int p = 0; p < n; ++p) {
       double z = -1 + 2. * p / n;
       for(int q = 0; q < n; ++q) {
-	double phi = 2 * M_PI * q / n;
-	double r = sqrt(1 - z*z);
-	Vec3 v(r*cos(phi), r*sin(phi), z);
-	try {
-	  test_cut_external(povfile, rtens, v);
-	} catch(string msg) {
-	  cerr << "problem: " << msg << " p = " << p << " q = " << q << endl;
-	}
+    double phi = 2 * M_PI * q / n;
+    double r = sqrt(1 - z*z);
+    Vec3 v(r*cos(phi), r*sin(phi), z);
+    try {
+      test_cut_external(povfile, rtens, v);
+    } catch(string msg) {
+      cerr << "problem: " << msg << " p = " << p << " q = " << q << endl;
+    }
       }
     }
-    
+
     povfile.close();
 }
 ///////////////////////povray test rotation/////////////////////
@@ -174,30 +193,62 @@ void test_cutrotation(const char* filebase)
 }
 ///////////////////////povray test cut rotation/////////////////
 
-///TODO:
-/*
- * For test_cutrotation to work class Matrix must have operator*(const Vec3&) returning
- *   NewVec := Matrix*OldVec
- *
- *Something like this:
+///////////////////////povray test cut rotation/////////////////
+void test_cutrotationpol(const char* filebase)
+{
+    char fname[256];
+    memset(fname,0,sizeof(fname));
+    strcat(fname,filebase);
+    strcat(fname,".pov");
+    ofstream povfile;
+    povfile.open(fname,ofstream::out);
+    povfile<<povray_templates::statheader;
+    povfile<<povray_templates::coords;
 
-Vec3
-Matrix::operator *(const Vec3& v) const{
-  if((lines!=3)||(columns!=3)) {
-    throw("Matrix*Vec3: non 3x3 matrix");
-  }
+    int n = 100, an = 360;
+    for(int p = 0; p < n; ++p)
+    {
+        Vec3 norm(sin(2*M_PI*p/n),0,cos(2*M_PI*p/n));
+        Matrix rot(3,3);
+        double dTheta=2*M_PI/an;
+        rot.Set(0,0,cos(dTheta)+norm.at(0)*norm.at(0)*(1-cos(dTheta)));
+        rot.Set(0,1,norm.at(0)*norm.at(1)*(1-cos(dTheta))-norm.at(2)*sin(dTheta));
+        rot.Set(0,2,norm.at(0)*norm.at(2)*(1-cos(dTheta))+norm.at(1)*sin(dTheta));
+        rot.Set(1,0,norm.at(0)*norm.at(1)*(1-cos(dTheta))+norm.at(2)*sin(dTheta));
+        rot.Set(1,1,cos(dTheta)+norm.at(1)*norm.at(1)*(1-cos(dTheta)));
+        rot.Set(1,2,norm.at(1)*norm.at(2)*(1-cos(dTheta))-norm.at(0)*sin(dTheta));
+        rot.Set(2,0,norm.at(0)*norm.at(2)*(1-cos(dTheta))-norm.at(1)*sin(dTheta));
+        rot.Set(2,1,norm.at(1)*norm.at(2)*(1-cos(dTheta))+norm.at(0)*sin(dTheta));
+        rot.Set(2,2,cos(dTheta)+norm.at(2)*norm.at(2)*(1-cos(dTheta)));
+        povfile<<"#if (clock = "<<p<<")\n";
+        Vec3 v(0,1,0);
+        for(int i = 0;i<an;++i)
+        {
+            try
+            {
+                test_cut(povfile, v,TestCuts_Pol);
+            }
+            catch(string msg)
+            {
+                cerr << "problem: " << msg << " p = " << p <<" vec "<< v << endl;
+            }
+            v = rot*v;
+        }
+        povfile<<"#end\n\n";
+    }
 
-  return Vec3(matr[0][0]*v.at(0)+matr[0][1]*v.at(1)+matr[0][2]*v.at(2),
-              matr[1][0]*v.at(0)+matr[1][1]*v.at(1)+matr[1][2]*v.at(2),
-              matr[2][0]*v.at(0)+matr[2][1]*v.at(1)+matr[2][2]*v.at(2));
+    povfile.close();
+
+    povray_templates::make_base(filebase,n,(n-1));
 }
-*/
+///////////////////////povray test cut rotation/////////////////
 
 int main()
 {
   try {
     //test_cuts("povray");
-    test_rotation("test_rotation");
+    //test_rotation("test_rotation");
+    test_cutrotationpol("cutropol");
   } catch(string msg) {
     cerr << "error: " << msg << endl;
   }

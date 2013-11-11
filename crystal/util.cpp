@@ -294,24 +294,37 @@ ostream& outputPovrayCoords(ostream& os, const Vec3& vec)
     return os<<"<"<<vec.at(1)<<","<<vec.at(2)<<","<<(-1*vec.at(0))<<">";
 }
 
-ostream& outputPovraySphere(ostream& os, const Vec3& vec, const PovrayColor& color)
+ostream& outputPovraySphere(ostream& os, const Vec3& vec, const PovrayColor& color,
+                            const Vec3* translate)
 {
     os<<"sphere {\n    ";
     outputPovrayCoords(os,vec);
     os<<", 0.04\npigment { rgb"<<color<<" }\n"
              "    finish {\n        ambient .2\n        diffuse .6\n        specular .75\n"
-             "        roughness .001\n    }\n}\n\n";
+             "        roughness .001\n    }";
+    if(translate)
+    {
+        os<<"\ntranslate";
+        outputPovrayCoords(os,*translate);
+    }
+    os<<"\n}\n";
     return os;
 }
 
 std::ostream& outputPovrayCylinder(std::ostream& os, const Vec3& base,
                                    const Vec3& cap, double radius,
-                                   const PovrayColor& color)
+                                   const PovrayColor& color, const Vec3 *translate)
 {
     os<<"cylinder {\n";
     outputPovrayCoords(os,base)<<"\n";
     outputPovrayCoords(os,cap)<<"\n"
                               <<radius<<"\n"
-                                "pigment{color "<<color<<"}\n}\n";
+                                "pigment{color "<<color<<"}";
+    if(translate)
+    {
+        os<<"\ntranslate";
+        outputPovrayCoords(os,*translate);
+    }
+    os<<"\n}\n";
     return os;
 }
