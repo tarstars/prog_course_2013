@@ -54,7 +54,9 @@ Vec3::at(int ind) const {
 }
 
 ostream& operator<< (ostream& os, const Vec3& r) {
-    return os << r.dat[0] << " " << r.dat[1] << " " << r.dat[2];
+    os << r.dat[0] << " ";
+    os << r.dat[1] << " " << r.dat[2];
+    return os;
 }
 
 Vec3

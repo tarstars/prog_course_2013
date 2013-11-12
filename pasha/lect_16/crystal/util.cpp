@@ -4,6 +4,7 @@
 #include "vec3.h"
 #include "polynom.h"
 #include "SolPart.h"
+#include <cmath>
 //__________________________________________________________________
 
 Tensor4 makeTetragonalTensor(double c11, double c12, double c13,
@@ -117,32 +118,88 @@ vector<Vec3> CalcPol(const vector<Matrix>& G) {
 
 vector<SolPart> solveChristoffel(const Tensor4& c_ij, const Vec3& n) {
     Matrix Gamma_ij = christoffel(c_ij, n);
-    cout << "christoffel(c_ij, n)" << endl;
-    Gamma_ij.print();
-
     Polynom poly = Matrix2Poly(Gamma_ij);
-    //cout << poly << endl << endl;
-
     vector<double> root = poly.solvePolynom(); //корни куб. ур-€
+    vector<Matrix> G_root = eval(Gamma_ij, root);
+    vector<Vec3> polariz = CalcPol(G_root); //пол€ризаци€
+    vector<SolPart> s(3);
+    for(int i = 0; i < 3; ++i) {
+        s[i] = SolPart(sqrt(root[i]/5.96e3), polariz[i]);
+    }
+
+    /*cout << "christoffel(c_ij, n)" << endl;
+    Gamma_ij.print();
     cout << "roots of cubic equetion" << endl;
     cout << root[0] << "; " << root[1] << "; " << root[2] << endl << endl;
-
-    vector<Matrix> G_root = eval(Gamma_ij, root);
     cout << "Matrices for each root" << endl;
     G_root[0].print();
     G_root[1].print();
     G_root[2].print();
-
-    vector<Vec3> polariz = CalcPol(G_root); //пол€ризаци€
     cout << "Polarisations for each root" << endl;
     cout << polariz[0] << endl;
     cout << polariz[1] << endl;
-    cout << polariz[2] << endl;
-
-    vector<SolPart> s(3);
-    for(int i = 0; i < 3; ++i) {
-        s[i] = SolPart(root[i], polariz[i]);
-    }
+    cout << polariz[2] << endl;*/
 
     return s;
 }
+//_____________________________________________________________________
+
+Matrix Rot_x(double phi)
+{
+  Matrix dat(3,3);
+
+  dat.Set(0, 0, 1);
+  dat.Set(0, 1, 0);
+  dat.Set(0, 2, 0);
+
+  dat.Set(1, 0, 0);
+  dat.Set(1, 1, cos(phi));
+  dat.Set(1, 2, sin(phi));
+
+  dat.Set(2, 0, 0);
+  dat.Set(2, 1, -sin(phi));
+  dat.Set(2, 2, cos(phi));
+
+return dat;
+}
+//_____________________________
+
+Matrix Rot_y(double phi)
+{
+  Matrix dat(3,3);
+
+  dat.Set(0, 0, cos(phi));
+  dat.Set(0, 1, 0);
+  dat.Set(0, 2, -sin(phi));
+
+  dat.Set(1, 0, 0);
+  dat.Set(1, 1, 1);
+  dat.Set(1, 2, 0);
+
+  dat.Set(2, 0, sin(phi));
+  dat.Set(2, 1, 0);
+  dat.Set(2, 2, cos(phi));
+
+return dat;
+}
+//____________________________
+
+Matrix Rot_z(double phi)
+{
+  Matrix dat(3,3);
+
+  dat.Set(0, 0, cos(phi));
+  dat.Set(0, 1, sin(phi));
+  dat.Set(0, 2, 0);
+
+  dat.Set(1, 0, -sin(phi));
+  dat.Set(1, 1, cos(phi));
+  dat.Set(1, 2, 0);
+
+  dat.Set(2, 0, 0);
+  dat.Set(2, 1, 0);
+  dat.Set(2, 2, 1);
+
+return dat;
+}
+//__________________________________________________________________

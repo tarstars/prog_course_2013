@@ -1,24 +1,27 @@
 #include "Tensor4.h"
 
 using namespace std;
-
+//______________________________________________________
 Tensor4::Tensor4() : v(81) {
     for(int i=0; i<81; ++i) {
         v[i] = 0;
     }
 }
+//______________________________________________________
 
 void
 Tensor4::set(int i, int j, int k, int l, double val) {
     checkRE(i, j, k, l);
     v[j + 3*i + 9*k + 27*l] = val;
 }
+//______________________________________________________
 
 double
 Tensor4::at(int i, int j, int k, int l) const {
     checkRE(i, j, k, l);
     return v[j + 3*i + 9*k + 27*l];
 }
+//______________________________________________________
 
 ostream& operator <<(ostream& os, const Tensor4& t) {
     os << scientific;

@@ -18,6 +18,9 @@ public:
     double Get(int a, int b) const;
     double trace() const;
     Matrix operator*(const Matrix&) const;
+    Matrix& operator=(const Matrix&);
+    double* operator[](int ind) {return matr[ind];}
+    const double* operator[](int ind) const {return matr[ind];}
     double det() const;
 };
 

@@ -114,6 +114,18 @@ Matrix::operator*(const Matrix& B_mat) const{
     return product;
 }
 
+Matrix&
+Matrix::operator=(const Matrix& r) {
+    if(this == &r) {
+        return *this;
+    }
+    Matrix tmp(r); //copy-constructor
+    swap(tmp.matr, matr);
+    swap(tmp.lines, lines);
+    swap(tmp.columns, columns);
+    return *this;
+}
+
 double
 Matrix::det() const{
     return + matr[0][0]*(matr[1][1]*matr[2][2] - matr[2][1]*matr[1][2])
