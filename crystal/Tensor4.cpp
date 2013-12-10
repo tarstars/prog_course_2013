@@ -34,7 +34,7 @@ Tensor4::tensorRot(const Matrix& m){
 	    for(int j1=0;j1 < 3 ; ++j1){
 	      for(int k1=0;k1 < 3 ; ++k1){
 		for(int l1=0;l1 < 3 ; ++l1){
-		  svertka += at(i,j,k,l)*m.Get(i1,i)*m.Get(j1,j)*m.Get(k1,k)*m.Get(l1,l);
+		  svertka += at(i1,j1,k1,l1)*m.Get(i1,i)*m.Get(j1,j)*m.Get(k1,k)*m.Get(l1,l);
 		}  
 	      }
 	    }

@@ -119,7 +119,7 @@ void test_rotation(const char* filebase)
     povfile<<povray_templates::coords;
 
     Tensor4 tens = makeTetragonalTensor(5.6e10, 5.145e10, 2.4e10, 10.6e10, 2.65e10, 6.6e10);
-    Matrix rotMat = rotX(1.57);
+    Matrix rotMat = rotX(0.57);
     cout << tens << endl << endl;
     Tensor4 rtens = tens.tensorRot(rotMat);
     cout << rtens << endl;
@@ -231,6 +231,7 @@ void test_cutrotationpol(const char* filebase)
             catch(string msg)
             {
                 cerr << "problem: " << msg << " p = " << p <<" vec "<< v << endl;
+
             }
             v = rot*v;
         }
@@ -247,8 +248,8 @@ int main()
 {
   try {
     //test_cuts("povray");
-    //test_rotation("test_rotation");
-    test_cutrotationpol("cutropol");
+    test_rotation("test_rotation");
+    // test_cutrotationpol("cutropol");
   } catch(string msg) {
     cerr << "error: " << msg << endl;
   }
