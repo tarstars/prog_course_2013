@@ -5,7 +5,7 @@ void yyerror(char *);
 %}
 
 %%
-[0-9]+  {yyval =  atoi(yytext)); return NUMBER;}
+[0-9]+  {yylval =  atoi(yytext); return NUMBER;}
 "+"  {return *yytext;}
 "*"  {return *yytext;}
 %%

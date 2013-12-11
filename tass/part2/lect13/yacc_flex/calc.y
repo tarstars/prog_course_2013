@@ -1,8 +1,7 @@
 %{ 
  #include <stdio.h> 
- int yylex(void); 
  void yyerror(char *); 
-#define	YYSTYPE	double
+ #define	YYSTYPE	int
 %} 
 
 %token NUMBER
@@ -10,9 +9,8 @@
 %left '*'
 
 %%
-whole: 
-whole expr '\n' {printf("%d\n", $2);}
-|
+whole:
+|whole expr {printf("%d\n", $2);}
 ;
 
 expr: 
